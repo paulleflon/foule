@@ -1,53 +1,60 @@
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database(process.env.DB_FILE);
-
-db.on('error', console.log);
-
+const db = require('better-sqlite3')(process.env.DB_FILE);
 
 module.exports.init = function() {
-	db.run
-		('CREATE TABLE IF NOT EXISTS IMAGES ('
-			+ 'id TEXT PRIMARY KEY NOT NULL,'
-			+ 'url TEXT NOT NULL,'
-			+ 'type TEXT NOT NULL,'
-			+ 'width INTEGER NOT NULL,'
-			+ 'height INTEGER NOT NULL,'
-			+ 'category TEXT NOT NULL,'
-			+ 'tags TEXT'
-			+ ')'
-		);
-	db.run('CREATE TABLE IF NOT EXISTS CATEGORIES ('
+	const createImages = db.prepare(
+		'CREATE TABLE IF NOT EXISTS IMAGES ('
+		+ 'id TEXT PRIMARY KEY NOT NULL,'
+		+ 'url TEXT NOT NULL,'
+		+ 'type TEXT NOT NULL,'
+		+ 'width INTEGER NOT NULL,'
+		+ 'height INTEGER NOT NULL,'
+		+ 'category TEXT NOT NULL,'
+		+ 'tags TEXT'
+		+ ')'
+	);
+	const createCategories = db.prepare('CREATE TABLE IF NOT EXISTS CATEGORIES ('
 		+ 'name TEXT PRIMARY KEY NOT NULL'
 		+ ')'
 	);
-	db.run('INSERT INTO CATEGORIES VALUES ("Default")', _ => null); // This callback avoids error.
+	const fillDefaultCateory = db.prepare('INSERT INTO CATEGORIES VALUES (\'Default\')');
+	createImages.run();
+	createCategories.run();
+	try {
+		// Throws an eror if this category already exists.
+		fillDefaultCateory.run();
+	} catch (err) {
+		// Never gonna give you up
+	}
 };
 
 module.exports.addImages = function(images) {
 	for (const img of images) {
-		const id = generateId();
-		db.run('INSERT INTO IMAGES VALUES ($id, $url, $type, $width, $height, $category, $tags)', {
-			$id: id,
-			$url: img.url,
-			$type: img.type,
-			$width: img.width,
-			$height: img.height,
-			$category: img.category,
-			$tags: img.tags.join(','),
-		});
+		(function insert() {
+			const id = generateId();
+			const query = db.prepare('INSERT INTO IMAGES VALUES ($id, $url, $type, $width, $height, $category, $tags)');
+			try {
+				query.run({
+					id,
+					url: img.url,
+					type: img.type,
+					width: img.width,
+					height: img.height,
+					category: img.category,
+					tags: img.tags.join(',')
+				});
+			} catch (err) {
+				// If the generated id already exists, we try again with another id until it works.
+				if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
+					insert();
+			}
+		})();
 	}
 };
 
-module.exports.getCategories = async function() {
-	return new Promise((resolve, reject) => {
-		db.all('SELECT name FROM CATEGORIES', (err, rows) => {
-			if (err)
-				return reject(err);
-			resolve(rows.map(row => row.name));
-		});
-	});
+module.exports.getCategories = function() {
+	const q = db.prepare('SELECT name FROM CATEGORIES');
+	return q.all().map(row => row.name);
 };
-
 
 function generateId() {
 	const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-';
