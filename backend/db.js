@@ -38,6 +38,16 @@ module.exports.addImages = function(images) {
 	}
 };
 
+module.exports.getCategories = async function() {
+	return new Promise((resolve, reject) => {
+		db.all('SELECT name FROM CATEGORIES', (err, rows) => {
+			if (err)
+				return reject(err);
+			resolve(rows.map(row => row.name));
+		});
+	});
+};
+
 
 function generateId() {
 	const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-';
