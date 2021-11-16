@@ -16,5 +16,9 @@ app.post('/images/add', (req, res) => {
 	res.status(result ? 500 : 200).send(result ? {error: result} : {success: true});
 });
 
+app.get('/categories', (req, res) => {
+	const arr = db.getCategories();
+	res.send(arr);
+});
 
 app.listen(8080, () => console.log('Listening'));
