@@ -1,6 +1,6 @@
 import React, {createRef} from 'react';
 import {MdClose} from 'react-icons/md';
-
+import axios from 'axios';
 
 class ImageAdder extends React.Component {
 	constructor(props) {
@@ -95,6 +95,21 @@ class ImageAdder extends React.Component {
 		this.setState({tags: updated});
 	}
 
+	send() {
+		console.log(process.env.REACT_APP_API);
+		console.log(this.inputs.category);
+		axios.post(`${process.env.REACT_APP_API}/images/add`, {images: this.state.images, tags: this.state.tags, category: this.inputs.category.current.value})
+			.then(response => {
+				if (response.status === 200) {
+					// To fill when the rest of the interface is completed
+				} else {
+					// Must get rid of all alert for better warning notifications.
+					alert('An error occured: see console for more infos.');
+					console.error(response.data.error);
+				}
+			});
+	}
+
 	render() {
 		return (
 			<div className='image-adder-container fixed w-full h-full flex justify-center items-center'>
@@ -130,12 +145,12 @@ class ImageAdder extends React.Component {
 							<input type='text' placeholder='Tag' className='font-default text-xl border-none h-8 px-2 block mt-2' onKeyDown={this.onTagDown.bind(this)} ref={this.inputs.tags} />
 						</div>
 						<div className='font-title text-xl text-white'>Category</div>
-						<select>
+						<select ref={this.inputs.category}>
 							<option className='font-bold' disabled>Select a category</option>
 							{this.props.categories.map(c => <option>{c}</option>)}
 						</select>
 					</div>
-					<button className='font-title text-xl text-white absolute bottom-4 right-4 border-2 border-white rounded-full px-4 py-1 hover:bg-white hover:bg-opacity-20 transition-all'>Send</button>
+					<button className='font-title text-xl text-white absolute bottom-4 right-4 border-2 border-white rounded-full px-4 py-1 hover:bg-white hover:bg-opacity-20 transition-all' onClick={this.send.bind(this)}>Send</button>
 				</div>
 			</div>
 		);
