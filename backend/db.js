@@ -33,7 +33,7 @@ module.exports.addImages = function(images) {
 			const id = generateId();
 			const query = db.prepare('INSERT INTO IMAGES VALUES ($id, $url, $type, $width, $height, $category, $tags)');
 			try {
-				query.run({
+				const result = query.run({
 					id,
 					url: img.url,
 					type: img.type,
@@ -46,6 +46,8 @@ module.exports.addImages = function(images) {
 				// If the generated id already exists, we try again with another id until it works.
 				if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
 					insert();
+				else
+					return err;
 			}
 		})();
 	}
