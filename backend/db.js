@@ -58,6 +58,24 @@ module.exports.getCategories = function() {
 	return q.all().map(row => row.name);
 };
 
+module.exports.addCategory = function(name) {
+	if (module.exports.getCategories().includes(name))
+		return false;
+	db.prepare('INSERT INTO CATEGORIES VALUES ($name)').run({name});
+};
+
+module.exports.deleteCategory = function(name) {
+	if (!module.exports.getCategories().includes(oldName))
+		return false;
+	db.prepare('DELETE FROM CATEGORIES WHERE name=$name').run({name});
+};
+
+module.exports.renameCategory = function(oldName, newName) {
+	if (!module.exports.getCategories().includes(oldName))
+		return false;
+	db.prepare('UPDATE CATEGORIES SET name = $newName WHERE name = $oldName').run({oldName, newName});
+};
+
 function generateId() {
 	const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-';
 	let id = '';
