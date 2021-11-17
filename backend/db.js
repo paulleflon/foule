@@ -65,7 +65,7 @@ module.exports.addCategory = function(name) {
 };
 
 module.exports.deleteCategory = function(name) {
-	if (!module.exports.getCategories().includes(oldName))
+	if (!module.exports.getCategories().includes(name))
 		return false;
 	db.prepare('DELETE FROM CATEGORIES WHERE name=$name').run({name});
 };
