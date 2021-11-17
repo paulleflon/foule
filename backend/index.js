@@ -21,4 +21,19 @@ app.get('/categories/get', (req, res) => {
 	res.send(arr);
 });
 
+app.post('/categories/add', (req, res) => {
+	db.addCategory(req.data.name);
+	res.sendStatus(200);
+});
+
+app.post('/categories/delete', (req, res) => {
+	db.deleteCategory(req.data.name);
+	res.sendStatus(200);
+});
+
+app.post('/categories/rename', (req, res) => {
+	db.renameCategory(req.data.oldName, req.data.newName);
+	res.sendStatus(200);
+});
+
 app.listen(8080, () => console.log('Listening'));
