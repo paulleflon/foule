@@ -12,14 +12,17 @@ function App() {
 		setLoading(false);
 	}, []);
 
-	const select = (name) => {
+	const select = async (name) => {
 		// TODO: Database insertion
-		if (!categories.includes(name))
+		if (!categories.includes(name)) {
+			await axios.post(`${process.env.REACT_APP_API}/categories/add`, {name});
 			setCategories([...categories, name]);
+		}
 		setSelected(name);
 	};
-	const del = (name) => {
+	const del = async (name) => {
 		// TODO: Database insertion / Optimization
+		await axios.post(`${process.env.REACT_APP_API}/categories/delete`, {name});
 		setCategories(categories.filter(c => c !== name));
 	};
 
