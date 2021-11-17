@@ -22,17 +22,17 @@ app.get('/categories/get', (req, res) => {
 });
 
 app.post('/categories/add', (req, res) => {
-	db.addCategory(req.data.name);
+	db.addCategory(req.body.name);
 	res.sendStatus(200);
 });
 
 app.post('/categories/delete', (req, res) => {
-	db.deleteCategory(req.data.name);
+	db.deleteCategory(req.body.name);
 	res.sendStatus(200);
 });
 
 app.post('/categories/rename', (req, res) => {
-	db.renameCategory(req.data.oldName, req.data.newName);
+	db.renameCategory(req.body.oldName, req.body.newName);
 	res.sendStatus(200);
 });
 
