@@ -6,7 +6,7 @@ function App() {
 	const [selected, setSelected] = useState();
 	const [isLoading, setLoading] = useState(true);
 	useEffect(async () => {
-		const res = await axios.get(`${process.env.REACT_APP_API}/categories`);
+		const res = await axios.get(`${process.env.REACT_APP_API}/categories/get`);
 		setCategories(res.data);
 		setSelected(res.data[0]);
 		setLoading(false);
