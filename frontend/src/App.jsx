@@ -8,7 +8,8 @@ function App() {
 	useEffect(async () => {
 		const res = await axios.get(`${process.env.REACT_APP_API}/categories/get`);
 		setCategories(res.data);
-		setSelected(res.data[0]);
+		const savedSelection = localStorage.getItem('selectedCategory');
+		setSelected(res.data.includes(savedSelection) ? savedSelection : res.data[0]);
 		setLoading(false);
 	}, []);
 
@@ -19,6 +20,7 @@ function App() {
 			setCategories([...categories, name]);
 		}
 		setSelected(name);
+		localStorage.setItem('selectedCategory', name);
 	};
 	const del = async (name) => {
 		// TODO: Database insertion / Optimization
