@@ -94,12 +94,10 @@ class ImageAdder extends React.Component {
 	}
 
 	send() {
-		console.log(process.env.REACT_APP_API);
-		console.log(this.inputs.category);
 		axios.post(`${process.env.REACT_APP_API}/images/add`, {images: this.state.images, tags: this.state.tags, category: this.inputs.category.current.value})
 			.then(response => {
 				if (response.status === 200) {
-					// To fill when the rest of the interface is completed
+					this.props.addImportedImages(response.data, this.inputs.category.current.value);
 				} else {
 					// Must get rid of all alert for better warning notifications.
 					alert('An error occured: see console for more infos.');
@@ -151,7 +149,7 @@ class ImageAdder extends React.Component {
 						<div className='font-title text-xl text-white'>Category</div>
 						<select ref={this.inputs.category}>
 							<option className='font-bold' disabled>Select a category</option>
-							{this.props.categories.map(c => <option>{c}</option>)}
+							{this.props.categories.map(c => <option key={c}>{c}</option>)}
 						</select>
 					</div>
 					<button className='font-title text-xl text-white absolute bottom-4 right-4 border-2 border-white rounded-full px-4 py-1 hover:bg-white hover:bg-opacity-20 transition-all' onClick={this.send.bind(this)}>Send</button>

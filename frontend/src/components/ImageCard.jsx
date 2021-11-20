@@ -1,4 +1,5 @@
 import {useEffect, createRef} from 'react';
+
 const MAX_WIDTH = 300;
 const MAX_HEIGHT = 400;
 
@@ -19,14 +20,14 @@ export default function ImageCard(props) {
 	return (
 		<div
 			className='image-card cursor-pointer relative m-0.5 flex items-center justify-center'
-			title={props.tags?.length ? props.tags.join(', ') : ''}
+			title={props.tags.join(', ')}
 		>
 			{props.type === 'image' ?
-				<img src={props.url} alt={props.tags?.length ? props.tags.join(', ') : ''} className='block' ref={mediaRef} />
-				: <video src={props.url} ref={mediaRef} autoPlay={true} loop></video>
+				<img src={props.url} alt={props.tags.join(', ')} className='block' ref={mediaRef} />
+				: <video src={props.url} ref={mediaRef} autoPlay={true} loop onMouseMove={() => mediaRef.current.playing || mediaRef.current.play()}></video>
 			}
 			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white overflow-ellipsis overflow-hidden whitespace-nowrap'>
-				{props.tags?.length ? props.tags.join(', ') : ''}
+				{props.tags.join(', ')}
 			</div>
 		</div>
 	);

@@ -53,6 +53,13 @@ function App() {
 		setCategories(categories.filter(c => c !== name));
 	};
 
+	const addImportedImages = (added, category) => {
+		const obj = {...images};
+		obj[category] = [...(obj[category] || []), ...added];
+		setImages(obj);
+		setIsAdding(false);
+	};
+
 	const shuffleImages = () => {
 		const gallery = galleryRef.current;
 		if (!galleryRef) return;
@@ -74,7 +81,7 @@ function App() {
 	} else {
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
-				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)}></ImageAdder> : ''}
+				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)} addImportedImages={addImportedImages}></ImageAdder> : ''}
 				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-between shadow-sm mb-4'>
 					<div className='font-title text-white text-4xl'>Foule</div>
 					<div className='flex flex-row items-center'>
