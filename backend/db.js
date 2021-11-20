@@ -28,12 +28,13 @@ module.exports.init = function() {
 };
 
 module.exports.addImages = function(images) {
+	const added = [];
 	for (const img of images) {
 		(function insert() {
 			const id = generateId();
 			const query = db.prepare('INSERT INTO IMAGES VALUES ($id, $url, $type, $width, $height, $category, $tags)');
 			try {
-				const result = query.run({
+				const entry = {
 					id,
 					url: img.url,
 					type: img.type,
@@ -41,7 +42,9 @@ module.exports.addImages = function(images) {
 					height: img.height,
 					category: img.category,
 					tags: img.tags.join(',')
-				});
+				};
+				query.run(entry);
+				added.push(entry);
 			} catch (err) {
 				// If the generated id already exists, we try again with another id until it works.
 				if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
@@ -51,6 +54,7 @@ module.exports.addImages = function(images) {
 			}
 		})();
 	}
+	return added;
 };
 
 module.exports.getImages = function(category, tags = []) {

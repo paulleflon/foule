@@ -12,7 +12,12 @@ app.use(express.json());
 app.post('/images/add', (req, res) => {
 	const insert = req.body.images.map(entry => {return {...entry, category: req.body.category, tags: req.body.tags};});
 	const result = db.addImages(insert);
-	res.status(result ? 500 : 200).send(result ? {error: result} : {success: true});
+	console.log(result);
+	if (result.length) {
+		res.status(200).send(result);
+	} else {
+		res.status(500).send('Error');
+	}
 });
 
 app.get('/images/get/:category', (req, res) => {
