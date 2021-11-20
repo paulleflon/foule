@@ -9,3 +9,8 @@ html, body, #root {
 body {
 	margin: 0;
 }
+
+
+.image-card:hover > .image-card-tags {
+	opacity: 1;
+}
