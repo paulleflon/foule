@@ -41,12 +41,12 @@ module.exports.addImages = function(images) {
 					width: img.width,
 					height: img.height,
 					category: img.category,
-					tags
+					tags: img.tags
 				};
-
 				query.run({...entry, tags: entry.tags.join(',')});
 				added.push(entry);
 			} catch (err) {
+				console.log(err);
 				// If the generated id already exists, we try again with another id until it works.
 				if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
 					insert();
