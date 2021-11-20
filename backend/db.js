@@ -41,9 +41,10 @@ module.exports.addImages = function(images) {
 					width: img.width,
 					height: img.height,
 					category: img.category,
-					tags: img.tags.join(',')
+					tags
 				};
-				query.run(entry);
+
+				query.run({...entry, tags: entry.tags.join(',')});
 				added.push(entry);
 			} catch (err) {
 				// If the generated id already exists, we try again with another id until it works.
