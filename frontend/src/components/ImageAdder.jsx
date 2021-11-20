@@ -20,13 +20,13 @@ class ImageAdder extends React.Component {
 		const value = this.inputs.src.current.value;
 		if (!value.trim().length)
 			return;
-		if (type === 'dist') {
-			try {
-				new URL(value);
-			} catch (_) {
-				alert('Invalid URL.');
-				return;
-			}
+		try {
+			new URL(value);
+		} catch (_) {
+			alert('Invalid URL.');
+			return;
+		}
+		if (type === 'image') {
 			const img = new Image();
 			img.src = value;
 			img.onerror = () => {
@@ -37,31 +37,29 @@ class ImageAdder extends React.Component {
 					url: value,
 					width: img.width,
 					height: img.height,
-					type: 'dist'
+					type: 'image'
 				};
 				this.setState({images: [...this.state.images, entry]});
 				this.inputs.src.current.value = '';
 				this.inputs.src.current.focus();
 			};
 		} else {
-			let src, width, height;
-			try {
-				src = value.match(/src='(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*))'/)[1];
-				width = parseInt(value.match(/width='(\d+)'/)[1]);
-				height = parseInt(value.match(/height='(\d+)'/)[1]);
-				console.log(src, width, height);
-			} catch (_) {
-				alert('Missing values.');
-				return;
-			}
-			const entry = {
-				url: src,
-				width,
-				height,
-				type: 'gfycat'
+			const vid = document.createElement('video');
+			vid.src = value;
+			vid.onerror = () => {
+				alert('Couldnt load video.');
 			};
-			this.setState({images: [...this.state.images, entry]});
-			this.inputs.src.current.value = '';
+			vid.oncanplaythrough = () => {
+				const entry = {
+					url: value,
+					width: vid.videoWidth,
+					height: vid.videoHeight,
+					type: 'video'
+				};
+				this.setState({images: [...this.state.images, entry]});
+				this.inputs.src.current.value = '';
+				this.inputs.src.current.focus();
+			};
 		}
 	}
 
@@ -126,9 +124,9 @@ class ImageAdder extends React.Component {
 								)}
 						</div>
 						<div className='input-group flex'>
-							<input type='text' placeholder='Image url / Gfycat embed url' className='font-default text-xl border-none h-8 px-2 w-1/2 rounded-none' ref={this.inputs.src} />
-							<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'dist')}>Add</button>
-							<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'gfycat')}>Add Gfy</button>
+							<input type='text' placeholder='Image/Video URL' className='font-default text-xl border-none h-8 px-2 w-1/2 rounded-none' ref={this.inputs.src} />
+							<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'image')}>Add</button>
+							<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'video')}>Add Video</button>
 						</div>
 					</div>
 					<div className='image-adder-metadata'>
