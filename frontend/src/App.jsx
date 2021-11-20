@@ -3,6 +3,7 @@ import React, {useEffect, useState, createRef} from 'react';
 import {MdOutlineNoPhotography, MdAdd} from 'react-icons/md';
 import {TiArrowShuffle} from 'react-icons/ti';
 import CategorySelect from './components/CategorySelect';
+import ImageAdder from './components/ImageAdder';
 import ImageCard from './components/ImageCard';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
 	const [isLoading, setLoading] = useState(true);
 	const [images, setImages] = useState({});
 	const [, forceRender] = useState({});
+	const [isAdding, setIsAdding] = useState(false);
 	const galleryRef = createRef();
 	useEffect(() => {
 		async function fetchData() {
@@ -72,6 +74,7 @@ function App() {
 	} else {
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
+				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)}></ImageAdder> : ''}
 				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-between shadow-sm mb-4'>
 					<div className='font-title text-white text-4xl'>Foule</div>
 					<div className='flex flex-row items-center'>
@@ -98,7 +101,12 @@ function App() {
 						<div className='text-gray-400 font-title text-4xl my-4'>No images</div>
 					</div>
 				}
-				<div className='fixed bottom-5 right-5 bg-gray-700 shadow-lg rounded-full cursor-pointer border-ml-4 p-2'><MdAdd color='#ffffff' size={38}></MdAdd></div>
+				<div
+					className='fixed bottom-5 right-5 bg-gray-700 shadow-lg rounded-full cursor-pointer border-ml-4 p-2'
+					onClick={() => setIsAdding(true)}
+				>
+					<MdAdd color='#ffffff' size={38}></MdAdd>
+				</div>
 			</div>
 		);
 	}

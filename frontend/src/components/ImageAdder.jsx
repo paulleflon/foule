@@ -110,8 +110,14 @@ class ImageAdder extends React.Component {
 
 	render() {
 		return (
-			<div className='image-adder-container fixed w-full h-full flex justify-center items-center'>
+			<div className='image-adder-container fixed w-full h-full flex justify-center items-center z-10'>
 				<div className='image-adder filter drop-shadow-lg bg-gray-800 md:w-1/2 h-5/6 md:h-2/3 w-5/6 rounded-lg p-4 overflow-hidden'>
+					<MdClose
+						className='absolute top-2 right-2 rounded-full cursor-pointer hover:bg-white hover:bg-opacity-30 p-2 transition-all duration-100'
+						size={40}
+						color='#ffffff'
+						onClick={() => this.props.close()}
+					></MdClose>
 					<div className='image-adder uploader'>
 						<div className='image-adder-tab-title font-title text-4xl text-white py-4 px-2'>Add images</div>
 						<div className='added-images my-4 overflow-y-auto max-h-32'>
