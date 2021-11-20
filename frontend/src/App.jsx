@@ -89,7 +89,7 @@ function App() {
 							title='Shuffle images'
 							color='#ffffff'
 							size={45}
-							className='mr-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-20 p-2'
+							className='mr-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2'
 							onClick={shuffleImages}
 						>
 						</TiArrowShuffle>
@@ -97,19 +97,19 @@ function App() {
 					</div>
 				</div>
 				{images[selected]?.length ?
-					(<div className='flex flex-wrap px-4 mb-6 transition-opacity duration-250' ref={galleryRef}>
+					(<div className='flex flex-wrap px-4 mb-6 transition-opacity duration-200' ref={galleryRef}>
 						{images[selected].map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
 					</div>)
 					:
 					<div className='flex justify-center items-center h-full flex-col'>
-						<div className='bg-black bg-opacity-40 rounded-full flex justify-center items-center w-32 h-32'>
+						<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
 							<MdOutlineNoPhotography size={48} color='#aaaaaa'></MdOutlineNoPhotography>
 						</div>
 						<div className='text-gray-400 font-title text-4xl my-4'>No images</div>
 					</div>
 				}
 				<div
-					className='fixed bottom-5 right-5 bg-gray-700 shadow-lg rounded-full cursor-pointer border-ml-4 p-2'
+					className='fixed bottom-0 right-0 m-4 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2'
 					onClick={() => setIsAdding(true)}
 				>
 					<MdAdd color='#ffffff' size={38}></MdAdd>

@@ -19,7 +19,7 @@ export default function ImageCard(props) {
 	}, []);
 	return (
 		<div
-			className='image-card cursor-pointer relative m-0.5 flex items-center justify-center'
+			className='image-card cursor-pointer relative m-1 flex items-center justify-center'
 			title={props.tags.join(', ')}
 		>
 			{props.type === 'image' ?
