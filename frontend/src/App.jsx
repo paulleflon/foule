@@ -62,7 +62,7 @@ function App() {
 
 	const shuffleImages = () => {
 		const gallery = galleryRef.current;
-		if (!galleryRef) return;
+		if (!gallery) return;
 		gallery.style.opacity = 0;
 		setTimeout(() => {
 			const obj = {...images};
