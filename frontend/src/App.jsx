@@ -82,7 +82,7 @@ function App() {
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
 				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)} addImportedImages={addImportedImages}></ImageAdder> : ''}
-				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-between shadow-sm mb-4'>
+				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-between shadow-sm'>
 					<div className='font-title text-white text-4xl'>Foule</div>
 					<div className='flex flex-row items-center'>
 						<TiArrowShuffle
@@ -97,7 +97,7 @@ function App() {
 					</div>
 				</div>
 				{images[selected]?.length ?
-					(<div className='flex flex-wrap px-4 mb-6 transition-opacity duration-200' ref={galleryRef}>
+					(<div className='flex flex-wrap px-4 pt-2 transition-opacity duration-200 overflow-y-auto' ref={galleryRef}>
 						{images[selected].map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
 					</div>)
 					:
@@ -109,7 +109,7 @@ function App() {
 					</div>
 				}
 				<div
-					className='fixed bottom-0 right-0 m-4 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2'
+					className='fixed bottom-0 right-0 m-5 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2'
 					onClick={() => setIsAdding(true)}
 				>
 					<MdAdd color='#ffffff' size={38}></MdAdd>
