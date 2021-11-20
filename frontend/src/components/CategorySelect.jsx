@@ -52,7 +52,7 @@ export default class CategorySelect extends React.Component {
 				ref={this.whole}>
 				<div className='cursor-pointer selected-category font-title text-xl flex justify-between items-center w-full p-2'>
 					<VscListSelection></VscListSelection>
-					<div className='w-1/2 overflow-hidden overflow-ellipsis whitespace-nowrap text-center' title={this.props.selected}>{this.props.selected}</div>
+					<div className='w-1/2 truncate text-center' title={this.props.selected}>{this.props.selected}</div>
 					<AiOutlineCaretDown size='0.75em' className={`transition-all duration-200 ${this.state.focused ? 'transform rotate-180' : ''}`}></AiOutlineCaretDown>
 				</div>
 				<div className={`${!this.state.focused ? 'h-0' : ''} transition-all overflow-hidden absolute w-full bg-white rounded-b`}>
@@ -81,7 +81,7 @@ function Category(props) {
 				props.name.length ?
 					<div
 						title={props.name}
-						className='py-1 px-2 text-s cursor-pointer font-default overflow-ellipsis whitespace-nowrap overflow-hidden w-3/4 flex-grow'>
+						className='py-1 px-2 text-s cursor-pointer font-default truncate w-3/4 flex-grow'>
 						{props.create ? 'Create category: ' : ''}
 						<span className='font-bold'>{props.name}</span>
 					</div>

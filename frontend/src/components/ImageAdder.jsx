@@ -122,7 +122,7 @@ class ImageAdder extends React.Component {
 							{
 								this.state.images.map((e, i) =>
 									<div className='flex text-white' key={`image-${i}`}>
-										<span className='inline-block w-3/4 overflow-ellipsis overflow-hidden whitespace-nowrap'>{e.url}</span>
+										<span className='inline-block w-3/4 truncate'>{e.url}</span>
 										<span className='mx-2 cursor-pointer' onClick={this.removeImage.bind(this, i)}><MdClose size='1.5em'></MdClose></span>
 									</div>
 								)}
@@ -140,7 +140,7 @@ class ImageAdder extends React.Component {
 							{
 								this.state.tags.map((l, i) =>
 									<div className='flex bg-green-400 px-1 py-1 mr-1 rounded-sm filter drop-shadow-md mt-2' key={`image-${i}`}>
-										<div className='max-w-xxs overflow-ellipsis overflow-hidden whitespace-nowrap'>{l}</div>
+										<div className='max-w-xxs truncate'>{l}</div>
 										<div className='ml-2 cursor-pointer' onClick={this.removeTag.bind(this, i)}><MdClose size='1.5em'></MdClose></div>
 									</div>
 								)}
@@ -152,7 +152,7 @@ class ImageAdder extends React.Component {
 							{this.props.categories.map(c => <option key={c}>{c}</option>)}
 						</select>
 					</div>
-					<button className='font-title text-xl text-white absolute bottom-0 right-0 m-2 border-2 border-white rounded-full px-4 py-1 hover:bg-white hover:bg-opacity-20 transition-all' onClick={this.send.bind(this)}>Send</button>
+					<button className='font-title text-xl text-white absolute bottom-0 right-0 m-2 border-2 border-white rounded-full px-4 py-1 hover:bg-white hover:bg-opacity-25 duration-200 transition-all' onClick={this.send.bind(this)}>Send</button>
 				</div>
 			</div>
 		);

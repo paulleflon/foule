@@ -26,7 +26,7 @@ export default function ImageCard(props) {
 				<img src={props.url} alt={props.tags.join(', ')} className='block' ref={mediaRef} />
 				: <video src={props.url} ref={mediaRef} autoPlay={true} loop onMouseMove={() => mediaRef.current.playing || mediaRef.current.play()}></video>
 			}
-			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white overflow-ellipsis overflow-hidden whitespace-nowrap'>
+			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate'>
 				{props.tags.join(', ')}
 			</div>
 		</div>
