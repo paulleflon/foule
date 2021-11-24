@@ -1,0 +1,8 @@
+{
+	"name": "foule",
+	"version": "0.1.0",
+	"scripts": {
+		"frontend:start": "cd frontend && npm start",
+		"backend:start": "cd backend && npm start"
+	}
+}
