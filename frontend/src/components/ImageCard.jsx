@@ -1,10 +1,22 @@
-import {useEffect, createRef} from 'react';
+import {useEffect, createRef, useState} from 'react';
 
 const MAX_WIDTH = 300;
 const MAX_HEIGHT = 400;
 
 export default function ImageCard(props) {
 	const mediaRef = createRef();
+	const [isPlaying, setPlaying] = useState(false);
+
+	const togglePlaying = () => {
+		if (isPlaying) {
+			mediaRef.current.currentTime = 0;
+			mediaRef.current.pause();
+		} else {
+			mediaRef.current.play();
+		}
+		setPlaying(!isPlaying);
+	};
+
 	useEffect(() => {
 		const media = mediaRef.current;
 		const w = media.videoWidth || media.width;
@@ -24,7 +36,19 @@ export default function ImageCard(props) {
 		>
 			{props.type === 'image' ?
 				<img src={props.url} alt={props.tags.join(', ')} className='block' ref={mediaRef} />
-				: <video src={props.url} ref={mediaRef} autoPlay={true} loop onMouseMove={() => mediaRef.current.playing || mediaRef.current.play()}></video>
+				: <video
+					src={props.url}
+					ref={mediaRef}
+					autoPlay={false}
+					loop
+					onClick={() => togglePlaying()}
+					onMouseEnter={() => mediaRef.current.play()}
+					onMouseLeave={() => {
+						if (!isPlaying) {
+							mediaRef.current.pause();
+							mediaRef.current.currentTime = 0;
+						}
+					}}></video>
 			}
 			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate'>
 				{props.tags.join(', ')}

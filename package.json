@@ -2,7 +2,11 @@
 	"name": "foule",
 	"version": "0.1.0",
 	"scripts": {
-		"frontend:start": "cd frontend && npm start",
-		"backend:start": "cd backend && npm start"
+		"frontend": "cd frontend && npm start",
+		"backend": "cd backend && npm start",
+		"start": "concurrently -k -n 'frontend,backend' -c 'green,blue' \"npm:frontend\" \"npm:backend\""
+	},
+	"dependencies": {
+		"concurrently": "^6.4.0"
 	}
 }
