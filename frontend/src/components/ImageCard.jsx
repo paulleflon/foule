@@ -1,7 +1,6 @@
 import {useEffect, createRef, useState} from 'react';
 
-const MAX_WIDTH = 300;
-const MAX_HEIGHT = 400;
+const MAX_HEIGHT = 300;
 
 export default function ImageCard(props) {
 	const mediaRef = createRef();
@@ -19,16 +18,11 @@ export default function ImageCard(props) {
 
 	useEffect(() => {
 		const media = mediaRef.current;
-		const w = media.videoWidth || media.width;
-		const h = media.videoHeight || media.height;
-		if (w > h) {
-			media.style.width = MAX_WIDTH + 'px';
-			media.style.height = MAX_WIDTH * h / w + 'px';
-		} else {
-			media.style.width = MAX_HEIGHT * w / h + 'px';
-			media.style.height = MAX_HEIGHT + 'px';
-		}
-	}, []);
+		const w = props.width;
+		const h = props.height;
+			media.width = MAX_HEIGHT * w / h;
+			media.height = MAX_HEIGHT;
+	});
 	return (
 		<div
 			className='image-card cursor-pointer relative m-1 flex items-center justify-center'
