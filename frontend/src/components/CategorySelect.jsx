@@ -1,7 +1,7 @@
 import React from 'react';
 import {createRef} from 'react';
 import {RiDeleteBin6Line} from 'react-icons/ri';
-import {AiOutlineCaretDown, AiOutlineCaretUp} from 'react-icons/ai';
+import {AiOutlineCaretDown} from 'react-icons/ai';
 import {VscListSelection} from 'react-icons/vsc';
 
 export default class CategorySelect extends React.Component {
@@ -48,7 +48,7 @@ export default class CategorySelect extends React.Component {
 			<div tabIndex={0}
 				onFocus={() => this.setState({focused: true})}
 				onBlur={this.onBlur.bind(this)}
-				className={`${!this.state.focused ? 'rounded-b' : ''} z-10 category-select rounded-t w-64 inline-block relative filter drop-shadow-md bg-white`}
+				className={`${!this.state.focused ? 'rounded-b' : ''} z-10 category-select rounded-t w-32 md:w-64 inline-block relative filter drop-shadow-md bg-white`}
 				ref={this.whole}>
 				<div className='cursor-pointer selected-category font-title text-xl flex justify-between items-center w-full p-2'>
 					<VscListSelection></VscListSelection>
@@ -59,7 +59,7 @@ export default class CategorySelect extends React.Component {
 					<div className='p-2'>
 						<input
 							onBlur={e => {e.stopPropagation(); this.whole.current.focus();}}
-							className='px-2 outline-none border-2 rounded-md focus:border-blue-400 text-lg transition-all duration-100'
+							className='px-2 outline-none border-2 rounded-md w-3/4 m-auto focus:border-blue-400 text-lg transition-all duration-100'
 							type='text'
 							ref={this.input}
 							onChange={this.onChange.bind(this)}

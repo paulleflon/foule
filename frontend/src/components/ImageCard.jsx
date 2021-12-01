@@ -41,9 +41,9 @@ export default function ImageCard(props) {
 		>
 			{isLoaded ?
 				props.type === 'image' ?
-					<img src={props.url} alt={props.tags.join(', ')} className='block w-full h-full' ref={mediaRef} />
+					<img src={props.url} alt={props.tags.join(', ')} className='block w-full h-full object-cover' ref={mediaRef} />
 					: <video
-						className='block w-full h-full'
+						className='block w-full h-full object-contain'
 						src={props.url}
 						ref={mediaRef}
 						autoPlay={false}

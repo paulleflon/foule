@@ -11,7 +11,6 @@ function App() {
 	const [selected, setSelected] = useState();
 	const [isLoading, setLoading] = useState(true);
 	const [images, setImages] = useState({});
-	const [, forceRender] = useState({});
 	const [isAdding, setIsAdding] = useState(false);
 	const galleryRef = createRef();
 	useEffect(() => {
@@ -36,7 +35,6 @@ function App() {
 			const obj = images;
 			obj[selected] = res.data.sort(() => Math.random() - 0.5);
 			setImages(obj);
-			forceRender({});
 		};
 		fetchData();
 	}, [selected]);
@@ -98,7 +96,7 @@ function App() {
 				</div>
 				{images[selected]?.length ?
 					(<div
-						className='images-grid flex flex-wrap px-4 pt-2 transition-opacity duration-200 overflow-y-auto justify-between'
+						className='images-grid flex flex-wrap px-4 pt-2 transition-opacity duration-200 overflow-y-auto justify-center md:justify-between'
 						ref={galleryRef}
 					>
 						{images[selected].map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}

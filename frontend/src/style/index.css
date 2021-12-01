@@ -14,9 +14,12 @@ body {
 	opacity: 1;
 }
 
-.images-grid .image-card:last-child {
-	margin-right: auto;
+@media (min-width: 768px) {
+	.images-grid .image-card:last-child {
+		margin-right: auto;
+	}
 }
+
 
 .loader {
 	border: 3px solid #fff;
