@@ -40,4 +40,4 @@ app.post('/categories/rename', (req, res) => {
 	res.sendStatus(200);
 });
 
-app.listen(8080, () => console.log('Listening'));
+app.listen(8080, () => console.log('Listening on port 8080'));

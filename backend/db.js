@@ -55,6 +55,7 @@ module.exports.addImages = function(images) {
 			}
 		})();
 	}
+	console.log(`Added ${added.length} images to the database.`);
 	return added;
 };
 
@@ -79,18 +80,21 @@ module.exports.addCategory = function(name) {
 	if (module.exports.getCategories().includes(name))
 		return false;
 	db.prepare('INSERT INTO CATEGORIES VALUES ($name)').run({name});
+	console.log(`Added category ${name} to the database.`);
 };
 
 module.exports.deleteCategory = function(name) {
 	if (!module.exports.getCategories().includes(name))
 		return false;
 	db.prepare('DELETE FROM CATEGORIES WHERE name=$name').run({name});
+	console.log(`Deleted category ${name} from the database.`);
 };
 
 module.exports.renameCategory = function(oldName, newName) {
 	if (!module.exports.getCategories().includes(oldName))
 		return false;
 	db.prepare('UPDATE CATEGORIES SET name = $newName WHERE name = $oldName').run({oldName, newName});
+	console.log(`Renamed category ${oldName} to ${newName}.`);
 };
 
 function generateId() {
