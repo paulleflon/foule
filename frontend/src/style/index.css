@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Catamaran:wght@900&family=Roboto&display=swap');
 @tailwind base;
 @tailwind utilities;
+
 html, body, #root {
 	height: 100%;
 }
@@ -9,6 +10,10 @@ body {
 	margin: 0;
 }
 
-.image-card:hover > .image-card-tags {
+.image-card:hover>.image-card-tags {
 	opacity: 1;
+}
+
+.images-grid .image-card:last-child {
+	margin-right: auto;
 }
