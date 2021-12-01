@@ -28,6 +28,9 @@ export default function ImageCard(props) {
 			threshold: 0.5
 		});
 		observer.observe(containerRef.current);
+		if (props.type === 'video') {
+			mediaRef.current?.pause();
+		}
 	}, []);
 	return (
 		<div
@@ -46,7 +49,7 @@ export default function ImageCard(props) {
 						className='block w-full h-full object-contain'
 						src={props.url}
 						ref={mediaRef}
-						autoPlay={false}
+						autoPlay={true}
 						loop
 						onClick={() => togglePlaying()}
 						onMouseEnter={() => mediaRef.current.play()}
