@@ -34,7 +34,7 @@ function App() {
 		async function fetchData() {
 			const res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selected}`);
 			const obj = images;
-			obj[selected] = res.data;
+			obj[selected] = res.data.sort(() => Math.random() - 0.5);
 			setImages(obj);
 			forceRender({});
 		};
