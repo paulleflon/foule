@@ -97,7 +97,10 @@ function App() {
 					</div>
 				</div>
 				{images[selected]?.length ?
-					(<div className='images-grid flex flex-wrap px-4 pt-2 transition-opacity duration-200 overflow-y-auto justify-between' ref={galleryRef}>
+					(<div
+						className='images-grid flex flex-wrap px-4 pt-2 transition-opacity duration-200 overflow-y-auto justify-between'
+						ref={galleryRef}
+					>
 						{images[selected].map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
 					</div>)
 					:

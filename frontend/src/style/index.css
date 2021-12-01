@@ -17,3 +17,16 @@ body {
 .images-grid .image-card:last-child {
 	margin-right: auto;
 }
+
+.loader {
+	border: 3px solid #fff;
+	border-top-color: transparent;
+	border-radius: 50%;
+	animation: spinning 1s linear infinite;
+}
+
+@keyframes spinning {
+	100% {
+		transform: rotate(360deg);
+	}
+}
