@@ -51,6 +51,7 @@ export default function ImageCard(props) {
 						loop
 						playsInline
 						muted
+						poster={`${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
 						onClick={() => togglePlaying()}
 					></video>
 				: <div className='loader w-4 h-4'></div>
