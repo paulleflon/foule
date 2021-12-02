@@ -1,7 +1,5 @@
 module.exports = {
-  purge: [
-    './src/components/*.jsx',
-  ],
+  purge: false,
   theme: {
     fontFamily: {
       default: ['Roboto', 'sans-serif'],
