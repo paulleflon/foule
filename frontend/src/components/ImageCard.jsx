@@ -38,7 +38,7 @@ export default function ImageCard(props) {
 			{isLoaded ?
 				props.type === 'image' ?
 					<img
-						src={`${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.2}&height=${h * 1.2}`}
+						src={`${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
 						alt={props.tags.join(', ')}
 						className='block w-full h-full object-cover'
 						ref={mediaRef}
