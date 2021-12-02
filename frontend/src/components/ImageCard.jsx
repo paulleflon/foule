@@ -5,7 +5,7 @@ const MAX_HEIGHT = 300;
 export default function ImageCard(props) {
 	const mediaRef = createRef();
 	const containerRef = createRef();
-	const [isPlaying, setPlaying] = useState(true);
+	const [isPlaying, setPlaying] = useState(false);
 	const [isLoaded, setLoaded] = useState(false);
 	const w = MAX_HEIGHT * props.width / props.height;
 	const h = MAX_HEIGHT;
@@ -41,9 +41,10 @@ export default function ImageCard(props) {
 						className='block w-full h-full object-contain'
 						src={props.url}
 						ref={mediaRef}
-						autoPlay={true}
+						autoPlay={false}
 						loop
 						playsInline
+						muted
 						onClick={() => togglePlaying()}
 					></video>
 				: <div className='loader w-4 h-4'></div>
