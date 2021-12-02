@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, {useEffect, useState, createRef} from 'react';
+import React, {useEffect, useState, useCallback, createRef} from 'react';
 import {MdOutlineNoPhotography, MdAdd} from 'react-icons/md';
 import {TiArrowShuffle} from 'react-icons/ti';
 import CategorySelect from './components/CategorySelect';
@@ -13,6 +13,17 @@ function App() {
 	const [images, setImages] = useState({});
 	const [isAdding, setIsAdding] = useState(false);
 	const galleryRef = createRef();
+	const handleUserKeyPress = useCallback(e => {
+		if (e.key === 's')
+			shuffleImages();
+	}, [galleryRef]);
+
+	useEffect(() => {
+		window.addEventListener('keydown', handleUserKeyPress);
+		return () => {
+			window.removeEventListener('keydown', handleUserKeyPress);
+		};
+	}, [handleUserKeyPress]);
 	useEffect(() => {
 		async function fetchData() {
 			let res = await axios.get(`${process.env.REACT_APP_API}/categories/get`);
