@@ -3,11 +3,29 @@ const express = require('express');
 const app = express();
 const db = require('./db');
 const cors = require('cors');
+const sharp = require('sharp');
+const fetch = require('node-fetch');
 
 app.use(cors({
 	origin: '*'
 }));
 app.use(express.json());
+
+app.get('/posters/:id', async (req, res) => {
+	const id = req.params.id;
+	let {width, height} = req.query;
+	const data = db.getImage(id);
+	width = parseInt(width) || data.width;
+	height = parseInt(height) || data.height;
+	let img = await fetch(data.url);
+	sharp(await img.buffer())
+		.resize(width, height)
+		.toBuffer()
+		.then(data => {
+			res.set('Content-Type', 'image/jpeg');
+			res.send(data);
+		});
+});
 
 app.post('/images/add', (req, res) => {
 	const insert = req.body.images.map(entry => {return {...entry, category: req.body.category, tags: req.body.tags};});

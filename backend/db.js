@@ -71,6 +71,15 @@ module.exports.getImages = function(category, tags = []) {
 	});
 };
 
+module.exports.getImage = function(id) {
+	const q = db.prepare('SELECT * FROM IMAGES WHERE id = $id');
+	const image = q.get({id});
+	if (image)
+		return {...image, tags: image.tags.split(',')};
+	else
+		return null;
+};
+
 module.exports.getCategories = function() {
 	const q = db.prepare('SELECT name FROM CATEGORIES');
 	return q.all().map(row => row.name);
