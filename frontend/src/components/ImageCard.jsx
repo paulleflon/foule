@@ -26,6 +26,7 @@ export default function ImageCard(props) {
 	});
 	return (
 		<div
+			id={props.id}
 			className='image-card  cursor-pointer relative m-1 flex items-center justify-center'
 			title={props.tags.join(', ')}
 			style={{
@@ -36,7 +37,12 @@ export default function ImageCard(props) {
 		>
 			{isLoaded ?
 				props.type === 'image' ?
-					<img src={props.url} alt={props.tags.join(', ')} className='block w-full h-full object-cover' ref={mediaRef} />
+					<img
+						src={`${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.2}&height=${h * 1.2}`}
+						alt={props.tags.join(', ')}
+						className='block w-full h-full object-cover'
+						ref={mediaRef}
+					/>
 					: <video
 						className='block w-full h-full object-contain'
 						src={props.url}
