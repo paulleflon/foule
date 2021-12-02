@@ -17,6 +17,9 @@ app.get('/posters/:id', async (req, res) => {
 	const id = req.params.id;
 	let {width, height} = req.query;
 	const data = db.getImage(id);
+	if (!data) {
+		return res.status(404).send('Not found');
+	}
 	width = parseInt(width) || data.width;
 	height = parseInt(height) || data.height;
 	if (data.type === 'image') {
