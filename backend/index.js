@@ -5,6 +5,8 @@ const db = require('./db');
 const cors = require('cors');
 const sharp = require('sharp');
 const fetch = require('node-fetch');
+const cp = require('child_process');
+const {mkdirSync, readFileSync, existsSync, unlinkSync} = require('fs');
 
 app.use(cors({
 	origin: '*'
@@ -17,14 +19,29 @@ app.get('/posters/:id', async (req, res) => {
 	const data = db.getImage(id);
 	width = parseInt(width) || data.width;
 	height = parseInt(height) || data.height;
-	let img = await fetch(data.url);
-	sharp(await img.buffer())
-		.resize(width, height)
-		.toBuffer()
-		.then(data => {
-			res.set('Content-Type', 'image/jpeg');
-			res.send(data);
+	if (data.type === 'image') {
+		let img = await fetch(data.url);
+		sharp(await img.buffer())
+			.resize(width, height)
+			.toBuffer()
+			.then(data => {
+				res.set('Content-Type', 'image/jpeg');
+				res.send(data);
+			});
+	} else {
+		cp.exec(`ffmpeg -i "${data.url}" -y -vf scale=-2:720 -vframes 1 "temp/${id}.jpg"`, (err, stdout, stderr) => {
+			let img = readFileSync(`temp/${id}.jpg`);
+			sharp(img)
+				.resize(width, height)
+				.toBuffer()
+				.then(data => {
+					res.set('Content-Type', 'image/jpeg');
+					res.send(data);
+					unlinkSync(`temp/${id}.jpg`);
+				});
 		});
+
+	}
 });
 
 app.post('/images/add', (req, res) => {
@@ -58,4 +75,8 @@ app.post('/categories/rename', (req, res) => {
 	res.sendStatus(200);
 });
 
-app.listen(8080, () => console.log('Listening on port 8080'));
+if (!existsSync('temp')) {
+	mkdirSync('temp');
+}
+
+app.listen(8080, () => console.log('Listening on port 8080'));;
