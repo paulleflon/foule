@@ -44,9 +44,10 @@ export default function ImageCard(props) {
 			id={props.id}
 			className='image-card cursor-pointer relative m-1 flex items-center justify-center'
 			title={props.tags.join(', ')}
-			style={(document.body.clientWidth < 640) ? {width: '80%', height: !isLoaded ? '80%' : 'auto'} : {
+			style={(document.body.clientWidth < 640) ? {width: '80%', height: !isLoaded ? '80%' : 'auto', minHeight: '100px'} : {
 				width: w + 'px',
-				height: h + 'px'
+				height: h + 'px',
+				minHeight: '100px'
 			}}
 			ref={containerRef}
 		>
