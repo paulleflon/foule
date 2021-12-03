@@ -1,6 +1,7 @@
 import React, {createRef} from 'react';
 import {MdClose} from 'react-icons/md';
 import axios from 'axios';
+import TagsEditor from './TagsEditor';
 
 class ImageAdder extends React.Component {
 	constructor(props) {
@@ -68,29 +69,8 @@ class ImageAdder extends React.Component {
 		this.setState({images: updated});
 	}
 
-	onTagDown(e) {
-		if (!this.inputs.tags.current.value.trim() && e.code === 'Backspace') {
-			this.removeTag(this.state.tags.length - 1);
-		}
-		// Timeout to have the input value with this keydown taken into account.
-		// We don't want this for Backspace though
-		setTimeout(() => {
-			const input = this.inputs.tags.current;
-			let value = this.inputs.tags.current.value.trim();
-			if (e.code === 'Comma')
-				value = value.substring(0, value.length - 1);
-			if (e.code === 'Enter' || e.code === 'Comma') {
-				if (value)
-					this.setState({tags: [...this.state.tags, value]});
-				input.value = '';
-				input.focus();
-			}
-		});
-	}
-
-	removeTag(i) {
-		const updated = [...this.state.tags.slice(0, i), ...this.state.tags.slice(i + 1)];
-		this.setState({tags: updated});
+	updateTags(tags) {
+		this.setState({tags});
 	}
 
 	send() {
@@ -136,16 +116,7 @@ class ImageAdder extends React.Component {
 					<div className='image-adder-metadata'>
 						<div className='image-adder-tab-title font-title text-4xl text-white py-4 px-2'>Set metadata</div>
 						<div className='font-title text-xl text-white'>Tags</div>
-						<div className='tags flex items-center flex-wrap w-100% overflow-auto p-2 max-h-32'>
-							{
-								this.state.tags.map((l, i) =>
-									<div className='flex bg-green-400 px-1 py-1 mr-1 rounded-sm filter drop-shadow-md mt-2' key={`image-${i}`}>
-										<div className='max-w-xxs truncate'>{l}</div>
-										<div className='ml-2 cursor-pointer' onClick={this.removeTag.bind(this, i)}><MdClose size='1.5em'></MdClose></div>
-									</div>
-								)}
-							<input type='text' placeholder='Tag' className='font-default text-xl border-none h-8 px-2 block mt-2' onKeyDown={this.onTagDown.bind(this)} ref={this.inputs.tags} />
-						</div>
+						<TagsEditor tags={this.state.tags} updateTags={this.updateTags.bind(this)} />
 						<div className='font-title text-xl text-white'>Category</div>
 						<select ref={this.inputs.category}>
 							<option className='font-bold' disabled>Select a category</option>
