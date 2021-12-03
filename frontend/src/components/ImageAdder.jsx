@@ -108,7 +108,7 @@ class ImageAdder extends React.Component {
 
 	render() {
 		return (
-			<div className='image-adder-container fixed w-full h-full flex justify-center items-center z-10 bg-black bg-opacity-50'>
+			<div className='z-50 image-adder-container fixed w-full h-full flex justify-center items-center bg-black bg-opacity-50'>
 				<div className='relative image-adder shadow-xl bg-gray-800 md:w-1/2 h-5/6 md:h-2/3 w-5/6 rounded-lg p-4 overflow-hidden'>
 					<MdClose
 						className='absolute top-0 right-0 m-2 rounded-full cursor-pointer hover:bg-white hover:bg-opacity-25 p-2 transition-all duration-100'
