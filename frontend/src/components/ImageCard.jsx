@@ -50,7 +50,8 @@ export default function ImageCard(props) {
 				height: h + 'px'
 			}}
 			ref={containerRef}
-			>
+		>
+			<div className='loader absolute w-4 h-4 z-0'></div>
 			{
 				isLoaded ?
 					props.type === 'image' ?
@@ -71,7 +72,7 @@ export default function ImageCard(props) {
 							poster={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
 							onClick={() => togglePlaying()}
 						></video>
-					: <div className='loader absolute w-4 h-4 z-0'></div>
+					: null
 
 			}
 			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate z-20'>
