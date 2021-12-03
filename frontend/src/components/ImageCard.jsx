@@ -55,7 +55,7 @@ export default function ImageCard(props) {
 				isLoaded ?
 					props.type === 'image' ?
 						<img
-							src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
+							src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
 							alt={props.tags.join(', ')}
 							className='block w-full h-full object-contain z-10'
 							ref={mediaRef}
@@ -68,7 +68,7 @@ export default function ImageCard(props) {
 							loop
 							playsInline
 							muted
-							poster={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
+							poster={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
 							onClick={() => togglePlaying()}
 						></video>
 					: <div className='loader absolute w-4 h-4 z-0'></div>
