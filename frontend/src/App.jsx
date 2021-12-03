@@ -98,7 +98,7 @@ function App() {
 				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'>
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
-						<TagsEditor tags={filter} updateTags={setFilter}></TagsEditor>
+						<TagsEditor tags={filter} updateTags={setFilter} inMenu={true}></TagsEditor>
 						<TiArrowShuffle
 							title='Shuffle images'
 							color='#ffffff'

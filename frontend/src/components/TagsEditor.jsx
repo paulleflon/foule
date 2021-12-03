@@ -1,7 +1,7 @@
 import {useRef} from 'react';
 import {MdClose} from 'react-icons/md';
 
-function TagsEditor({tags, updateTags}) {
+function TagsEditor({tags, updateTags, inMenu}) {
 	const inputRef = useRef(null);
 	const onDown = (e) => {
 		if (!inputRef.current.value.trim() && e.code === 'Backspace') {
@@ -23,7 +23,9 @@ function TagsEditor({tags, updateTags}) {
 		});
 	};
 	return (
-		<div className='tags flex items-center flex-wrap w-100% overflow-auto p-2 max-h-32'>
+		<div className={inMenu ?
+			'tags flex flex-row'
+			: 'tags flex items-center flex-wrap w-100% overflow-auto p-2 max-h-32'}>
 			{
 				tags.map((l, i) =>
 					<div className='flex bg-green-400 px-1 py-1 mr-1 rounded-sm filter drop-shadow-md mt-2' key={`image-${i}`}>
@@ -31,7 +33,7 @@ function TagsEditor({tags, updateTags}) {
 						<div className='ml-2 cursor-pointer' onClick={updateTags.bind(this, tags.slice(0, tags.length - 1))}><MdClose size='1.5em'></MdClose></div>
 					</div>
 				)}
-			<input type='text' placeholder='Tag' className='font-default text-xl border-none h-8 px-2 block mt-2' onKeyDown={onDown} ref={inputRef} />
+			<input type='text' placeholder={inMenu ? 'Filter...' : 'Tag'} className='font-default text-xl border-none h-8 px-2 block mt-2 rounded-sm w-20 md:w-auto' onKeyDown={onDown} ref={inputRef} />
 		</div>
 	);
 }
