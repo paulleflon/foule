@@ -34,9 +34,7 @@ function App() {
 			await axios.post(`${process.env.REACT_APP_API}/categories/add`, {name});
 			setCategories([...categories, name]);
 		}
-		console.log(name);
 		const res = await axios.get(`${process.env.REACT_APP_API}/images/get/${name}`);
-		console.log(res);
 		const obj = images;
 		obj[name] = res.data.sort(() => Math.random() - 0.5);
 		setImages(obj);
