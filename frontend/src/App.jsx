@@ -122,7 +122,7 @@ function App() {
 					</div>
 				}
 				<div
-					className='fixed bottom-0 right-0 m-5 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2'
+					className='fixed bottom-0 right-0 m-10 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2 z-50'
 					onClick={() => setIsAdding(true)}
 				>
 					<MdAdd color='#ffffff' size={38}></MdAdd>
