@@ -75,7 +75,7 @@ export default function ImageCard(props) {
 						></video>
 					: null
 			}
-			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate'>
+			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate z-20'>
 				{props.tags.join(', ')}
 			</div>
 		</div >
