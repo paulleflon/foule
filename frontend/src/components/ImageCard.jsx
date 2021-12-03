@@ -24,14 +24,13 @@ export default function ImageCard(props) {
 			}
 		}, {
 			root: null,
-			threshold: 0.5
+			threshold: 0.01
 		});
 		observer.observe(containerRef.current);
 	}, []);
 
 	const handleResize = () => {
 		if (document.body.clientWidth < 640) {
-			console.log('????');
 			setW(640);
 			setH(640 * props.height / props.width);
 			setBestUrl(`${process.env.REACT_APP_API}/posters/${props.id}?width=${640}&height=${640 * props.height / props.width}`);
