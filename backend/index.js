@@ -24,6 +24,8 @@ app.get('/posters/:id', async (req, res) => {
 	height = parseInt(height) || data.height;
 	if (data.type === 'image') {
 		let img = await fetch(data.url);
+		if (img.status !== 200)
+			return res.redirect(data.url);
 		sharp(await img.buffer())
 			.resize(width, height)
 			.toBuffer()
