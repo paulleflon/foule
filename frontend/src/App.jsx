@@ -5,6 +5,7 @@ import {TiArrowShuffle} from 'react-icons/ti';
 import CategorySelect from './components/CategorySelect';
 import ImageAdder from './components/ImageAdder';
 import ImageCard from './components/ImageCard';
+import TagsEditor from './components/TagsEditor';
 
 function App() {
 	const [categories, setCategories] = useState();
@@ -12,6 +13,7 @@ function App() {
 	const [isLoading, setLoading] = useState(true);
 	const [images, setImages] = useState({});
 	const [isAdding, setIsAdding] = useState(false);
+	const [filter, setFilter] = useState([]);
 	const galleryRef = createRef();
 	useEffect(() => {
 		async function fetchData() {
@@ -84,12 +86,19 @@ function App() {
 			</div>
 		);
 	} else {
+		const filtered = images[selected]?.filter(img => {
+			for (const tag of filter) {
+				if (!img.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())) return false;
+			}
+			return true;
+		});
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
 				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)} addImportedImages={addImportedImages}></ImageAdder> : ''}
 				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'>
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
+						<TagsEditor tags={filter} updateTags={setFilter}></TagsEditor>
 						<TiArrowShuffle
 							title='Shuffle images'
 							color='#ffffff'
@@ -101,13 +110,13 @@ function App() {
 						<CategorySelect categories={categories} selected={selected} select={select} delete={del}></CategorySelect>
 					</div>
 				</div>
-				{images[selected]?.length ?
+				{filtered.length ?
 					(<div
 						className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 overflow-y-auto justify-center md:justify-between flex-col sm:flex-row items-center sm:items-start'
 						style={{flexFlow: 'wrap'}}
 						ref={galleryRef}
 					>
-						{images[selected].map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
+						{filtered.map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
 					</div>)
 					:
 					<div className='flex justify-center items-center h-full flex-col'>
