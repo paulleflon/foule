@@ -7,13 +7,17 @@ export default function ImageCard(props) {
 	const containerRef = createRef();
 	const [isPlaying, setPlaying] = useState(false);
 	const [isLoaded, setLoaded] = useState(false);
-	const w = MAX_HEIGHT * props.width / props.height;
-	const h = MAX_HEIGHT;
+	const [w, setW] = useState(0);
+	const [h, setH] = useState(0);
+	const [bestUrl, setBestUrl] = useState(undefined);
 	const togglePlaying = () => {
 		mediaRef.current[isPlaying ? 'pause' : 'play']();
 		setPlaying(!isPlaying);
 	};
 	useEffect(() => {
+		window.addEventListener('resize', handleResize);
+		handleResize();
+		
 		const observer = new IntersectionObserver(([entry]) => {
 			if (entry.isIntersecting && !isLoaded) {
 				setLoaded(true);
@@ -23,43 +27,57 @@ export default function ImageCard(props) {
 			threshold: 0.5
 		});
 		observer.observe(containerRef.current);
-	});
+	}, []);
+
+	const handleResize = () => {
+		if (document.body.clientWidth < 640) {
+			console.log('????');
+			setW(640);
+			setH(640 * props.height / props.width);
+			setBestUrl(`${process.env.REACT_APP_API}/posters/${props.id}?width=${640}&height=${640 * props.height / props.width}`);
+		} else {
+			setW(MAX_HEIGHT * props.width / props.height);
+			setH(MAX_HEIGHT);
+		}
+	};
+
 	return (
 		<div
 			id={props.id}
-			className='image-card  cursor-pointer relative m-1 flex items-center justify-center'
+			className='image-card cursor-pointer relative m-1 flex items-center justify-center'
 			title={props.tags.join(', ')}
-			style={{
+			style={(document.body.clientWidth < 640) ? {width: '80%', height: !isLoaded ? '80%' : 'auto'} : {
 				width: w + 'px',
-				height: h + 'px',
+				height: h + 'px'
 			}}
 			ref={containerRef}
 		>
-			{isLoaded ?
-				props.type === 'image' ?
-					<img
-						src={`${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
-						alt={props.tags.join(', ')}
-						className='block w-full h-full object-cover'
-						ref={mediaRef}
-					/>
-					: <video
-						className='block w-full h-full object-contain'
-						src={props.url}
-						ref={mediaRef}
-						autoPlay={false}
-						loop
-						playsInline
-						muted
-						poster={`${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
-						onClick={() => togglePlaying()}
-					></video>
-				: <div className='loader w-4 h-4'></div>
+			{
+				isLoaded ?
+					props.type === 'image' ?
+						<img
+							src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
+							alt={props.tags.join(', ')}
+							className='block w-full h-full object-contain'
+							ref={mediaRef}
+						/>
+						: <video
+							className='block w-full h-full object-contain'
+							src={props.url}
+							ref={mediaRef}
+							autoPlay={false}
+							loop
+							playsInline
+							muted
+							poster={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
+							onClick={() => togglePlaying()}
+						></video>
+					: < div className='loader w-4 h-4' ></div >
 			}
 			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate'>
 				{props.tags.join(', ')}
 			</div>
-		</div>
+		</div >
 	);
 
 }
