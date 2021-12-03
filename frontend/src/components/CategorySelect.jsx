@@ -48,18 +48,19 @@ export default class CategorySelect extends React.Component {
 			<div tabIndex={0}
 				onFocus={() => this.setState({focused: true})}
 				onBlur={this.onBlur.bind(this)}
-				className={`${!this.state.focused ? 'rounded-b' : ''} z-40 category-select rounded-t w-32 md:w-64 inline-block relative filter drop-shadow-md bg-white`}
+				className={`${this.state.focused ? 'md:rounded-b-none' : ''} rounded-b z-40 category-select rounded-t md:w-64 inline-block md:relative filter drop-shadow-md bg-white`}
 				ref={this.whole}>
 				<div className='cursor-pointer selected-category font-title text-xl flex justify-between items-center w-full p-2'>
 					<VscListSelection></VscListSelection>
-					<div className='w-1/2 truncate text-center' title={this.props.selected}>{this.props.selected}</div>
-					<AiOutlineCaretDown size='0.75em' className={`transition-all duration-200 ${this.state.focused ? 'transform rotate-180' : ''}`}></AiOutlineCaretDown>
+					<div className='w-1/2 truncate text-center hidden md:block' title={this.props.selected}>{this.props.selected}</div>
+					<AiOutlineCaretDown size='0.75em' className={`transition-all duration-200 ${this.state.focused ? 'transform rotate-180' : ''} hidden md:block`}></AiOutlineCaretDown>
 				</div>
-				<div className={`${!this.state.focused ? 'h-0' : ''} transition-all overflow-hidden absolute w-full bg-white rounded-b`}>
+				<div
+					className={`${!this.state.focused ? 'h-0' : ''} transition-all overflow-hidden absolute right-0 w-3/4 md:w-full bg-white my-2 mx-2 md:m-0 rounded-b rounded-t md:rounded-t-none`}>
 					<div className='p-2'>
 						<input
 							onBlur={e => {e.stopPropagation(); this.whole.current.focus();}}
-							className='px-2 outline-none border-2 rounded-md w-3/4 m-auto focus:border-blue-400 text-lg transition-all duration-100'
+							className='px-2 outline-none border-2 rounded-md w-full md:w-3/4 m-auto focus:border-blue-400 text-lg transition-all duration-100'
 							type='text'
 							ref={this.input}
 							onChange={this.onChange.bind(this)}

@@ -91,8 +91,8 @@ function App() {
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
 				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)} addImportedImages={addImportedImages}></ImageAdder> : ''}
-				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-between shadow-sm'>
-					<div className='font-title text-white text-4xl'>Foule</div>
+				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'>
+					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
 						<TiArrowShuffle
 							title='Shuffle images'
