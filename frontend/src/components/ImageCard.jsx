@@ -17,7 +17,7 @@ export default function ImageCard(props) {
 	useEffect(() => {
 		window.addEventListener('resize', handleResize);
 		handleResize();
-		
+
 		const observer = new IntersectionObserver(([entry]) => {
 			if (entry.isIntersecting && !isLoaded) {
 				setLoaded(true);
@@ -51,18 +51,19 @@ export default function ImageCard(props) {
 				height: h + 'px'
 			}}
 			ref={containerRef}
-		>
+			>
+			<div className='loader absolute w-4 h-4 z-0'></div>
 			{
 				isLoaded ?
 					props.type === 'image' ?
 						<img
 							src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
 							alt={props.tags.join(', ')}
-							className='block w-full h-full object-contain'
+							className='block w-full h-full object-contain z-10'
 							ref={mediaRef}
 						/>
 						: <video
-							className='block w-full h-full object-contain'
+							className='block w-full h-full object-contain z-10'
 							src={props.url}
 							ref={mediaRef}
 							autoPlay={false}
@@ -72,7 +73,7 @@ export default function ImageCard(props) {
 							poster={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${w * 1.5}&height=${h * 1.5}`}
 							onClick={() => togglePlaying()}
 						></video>
-					: < div className='loader w-4 h-4' ></div >
+					: null
 			}
 			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate'>
 				{props.tags.join(', ')}
