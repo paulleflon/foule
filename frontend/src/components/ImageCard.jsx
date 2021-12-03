@@ -14,10 +14,20 @@ export default function ImageCard(props) {
 		mediaRef.current[isPlaying ? 'pause' : 'play']();
 		setPlaying(!isPlaying);
 	};
+
 	useEffect(() => {
+		const handleResize = () => {
+			if (document.body.clientWidth < 640) {
+				setW(640);
+				setH(640 * props.height / props.width);
+				setBestUrl(`${process.env.REACT_APP_API}/posters/${props.id}?width=${640}&height=${640 * props.height / props.width}`);
+			} else {
+				setW(MAX_HEIGHT * props.width / props.height);
+				setH(MAX_HEIGHT);
+			}
+		};
 		window.addEventListener('resize', handleResize);
 		handleResize();
-
 		const observer = new IntersectionObserver(([entry]) => {
 			if (entry.isIntersecting && !isLoaded) {
 				setLoaded(true);
@@ -27,18 +37,7 @@ export default function ImageCard(props) {
 			threshold: 0.01
 		});
 		observer.observe(containerRef.current);
-	}, []);
-
-	const handleResize = () => {
-		if (document.body.clientWidth < 640) {
-			setW(640);
-			setH(640 * props.height / props.width);
-			setBestUrl(`${process.env.REACT_APP_API}/posters/${props.id}?width=${640}&height=${640 * props.height / props.width}`);
-		} else {
-			setW(MAX_HEIGHT * props.width / props.height);
-			setH(MAX_HEIGHT);
-		}
-	};
+	}, [containerRef, isLoaded, props.id, props.height, props.width]);
 
 	return (
 		<div

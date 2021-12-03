@@ -12,18 +12,8 @@ function App() {
 	const [isLoading, setLoading] = useState(true);
 	const [images, setImages] = useState({});
 	const [isAdding, setIsAdding] = useState(false);
+	const [didMount, setDidMount] = useState(false);
 	const galleryRef = createRef();
-	const handleUserKeyPress = useCallback(e => {
-		if (e.key === 's')
-			shuffleImages();
-	}, [galleryRef]);
-
-	useEffect(() => {
-		window.addEventListener('keydown', handleUserKeyPress);
-		return () => {
-			window.removeEventListener('keydown', handleUserKeyPress);
-		};
-	}, [handleUserKeyPress]);
 	useEffect(() => {
 		async function fetchData() {
 			let res = await axios.get(`${process.env.REACT_APP_API}/categories/get`);
@@ -41,6 +31,7 @@ function App() {
 		fetchData();
 	}, []);
 	useEffect(() => {
+		if (didMount) return;
 		async function fetchData() {
 			const res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selected}`);
 			const obj = images;
@@ -48,7 +39,8 @@ function App() {
 			setImages(obj);
 		};
 		fetchData();
-	}, [selected]);
+		setDidMount(true);
+	}, [selected, images, didMount]);
 	const select = async (name) => {
 		if (!categories.includes(name)) {
 			await axios.post(`${process.env.REACT_APP_API}/categories/add`, {name});
@@ -69,7 +61,7 @@ function App() {
 		setIsAdding(false);
 	};
 
-	const shuffleImages = () => {
+	const shuffleImages = useCallback(() => {
 		const gallery = galleryRef.current;
 		if (!gallery) return;
 		gallery.style.opacity = 0;
@@ -79,7 +71,19 @@ function App() {
 			setImages(obj);
 			gallery.style.opacity = 1;
 		}, 250);
-	};
+	}, [galleryRef, images, selected]);
+
+	const handleUserKeyPress = useCallback(e => {
+		if (e.key === 's')
+			shuffleImages();
+	}, [shuffleImages]);
+
+	useEffect(() => {
+		window.addEventListener('keydown', handleUserKeyPress);
+		return () => {
+			window.removeEventListener('keydown', handleUserKeyPress);
+		};
+	}, [handleUserKeyPress]);
 
 	if (isLoading) {
 		return (
