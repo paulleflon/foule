@@ -1,6 +1,6 @@
 import React from 'react';
 import {createRef} from 'react';
-import {RiDeleteBin6Line} from 'react-icons/ri';
+import {RiDeleteBin6Line, RiEdit2Fill} from 'react-icons/ri';
 import {AiOutlineCaretDown} from 'react-icons/ai';
 import {VscListSelection} from 'react-icons/vsc';
 
@@ -39,7 +39,7 @@ export default class CategorySelect extends React.Component {
 		if (this.state.filter === this.props.selected)
 			return <div className='py-1 px-2 text-s hover:bg-white font-default italic w-full'>Already browsing <span className='font-bold'>{this.state.filter}</span></div>;
 		const filtered = this.props.categories.filter(c => c.toLowerCase().includes(this.state.filter.toLowerCase()) && c !== this.props.selected);
-		const mapped = filtered.map(c => <Category key={c} name={c} select={this.select.bind(this)} delete={this.delete.bind(this)}></Category>);
+		const mapped = filtered.map(c => <Category key={c} name={c} select={this.select.bind(this)} delete={this.delete.bind(this)} rename={this.props.rename.bind(this)}></Category>);
 		return mapped.length ? mapped : <Category name={this.state.filter} create={true} select={this.select.bind(this)}></Category>;
 	}
 
@@ -76,21 +76,46 @@ export default class CategorySelect extends React.Component {
 }
 
 function Category(props) {
+	const [renaming, setRenaming] = React.useState(false);
+	const onDown = (e) => {
+		if (e.key === 'Enter' && e.target.value.trim().length) {
+			props.rename(props.name, e.target.value);
+			setRenaming(false);
+		} else if (e.key === 'Escape') {
+			setRenaming(false);
+		}
+	};
 	return (
-		<div className='flex items-center justify-between  w-full hover:bg-gray-100' onClick={() => props.select(props.name)}>
+		<div className='flex items-center justify-between  w-full hover:bg-gray-100' onClick={() => !renaming && props.select(props.name)}>
 			{
-				props.name.length ?
-					<div
-						title={props.name}
-						className='py-1 px-2 text-s cursor-pointer font-default truncate w-3/4 flex-grow'>
-						{props.create ? 'Create category: ' : ''}
-						<span className='font-bold'>{props.name}</span>
-					</div>
+				renaming ?
+					<input
+						className='w-full outline-none border-2 rounded-md text-lg transition-all duration-100'
+						type='text'
+						defaultValue={props.name}
+						onKeyDown={onDown}
+						onBlur={() => setRenaming(false)}
+						autoFocus />
 					:
-					<div className='py-1 px-2 text-s hover:bg-white font-default italic w-full'>Create a category...</div>
+					props.name.length ?
+						<div
+							title={props.name}
+							className='py-1 px-2 text-s cursor-pointer font-default truncate w-3/4 flex-grow'>
+							{props.create ? 'Create category: ' : ''}
+							<span className='font-bold'>{props.name}</span>
+						</div>
+						:
+						<div className='py-1 px-2 text-s hover:bg-white font-default italic w-full'>Create a category...</div>
 			}
 			{!props.create
-				? <div className='cursor-pointer px-1' title='Delete' onClick={(e) => {e.stopPropagation(); props.delete(props.name);}}><RiDeleteBin6Line color='#eb4034'></RiDeleteBin6Line></div>
+				? (
+					<div className='flex flex-row'>
+						{
+							!renaming && <div className='cursor-pointer px-1' title='Rename' onClick={(e) => {e.stopPropagation(); setRenaming(true);}}><RiEdit2Fill></RiEdit2Fill></div>
+						}
+						<div className='cursor-pointer px-1' title='Delete' onClick={(e) => {e.stopPropagation(); props.delete(props.name);}}><RiDeleteBin6Line color='#eb4034'></RiDeleteBin6Line></div>
+					</div>
+				)
 				: null
 			}
 		</div>

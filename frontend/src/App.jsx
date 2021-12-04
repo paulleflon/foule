@@ -72,6 +72,18 @@ function App() {
 			shuffleImages();
 	}, [shuffleImages]);
 
+	const renameCategory = async (oldName, newName) => {
+		await axios.post(`${process.env.REACT_APP_API}/categories/rename`, {oldName, newName});
+		setCategories(categories.map(c => c === oldName ? newName : c));
+		const obj = {...images};
+		if (obj[oldName]) {
+			obj[oldName] = obj[oldName].map(i => ({...i, category: newName}));
+			obj[newName] = obj[oldName];
+			delete obj[oldName];
+			setImages(obj);
+		}
+	};
+
 	useEffect(() => {
 		window.addEventListener('keydown', handleUserKeyPress);
 		return () => {
@@ -110,7 +122,12 @@ function App() {
 							onClick={shuffleImages}
 						>
 						</TiArrowShuffle>
-						<CategorySelect categories={categories} selected={selected} select={select} delete={del}></CategorySelect>
+						<CategorySelect
+							categories={categories}
+							selected={selected}
+							select={select}
+							rename={renameCategory}
+							delete={del}></CategorySelect>
 					</div>
 				</div>
 				{total ?
