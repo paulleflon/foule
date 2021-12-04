@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, {useEffect, useState, useCallback, createRef} from 'react';
 import {MdOutlineNoPhotography, MdAdd} from 'react-icons/md';
+import JoinFull from './assets/join_full.png';
+import JoinInner from './assets/join_inner.png';
 import {TiArrowShuffle} from 'react-icons/ti';
 import CategorySelect from './components/CategorySelect';
 import ImageAdder from './components/ImageAdder';
@@ -15,6 +17,7 @@ function App() {
 	const [isAdding, setIsAdding] = useState(false);
 	const [editing, setEditing] = useState(undefined);
 	const [filter, setFilter] = useState([]);
+	const [filterUnion, setFilterUnion] = useState(false);
 	const galleryRef = createRef();
 	useEffect(() => {
 		async function fetchData() {
@@ -121,10 +124,17 @@ function App() {
 		);
 	} else {
 		const filtered = images[selected]?.filter(img => {
+			const imgTags = img.tags.map(t => t.toLowerCase());
 			for (const tag of filter) {
-				if (!img.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())) return false;
+				if (filterUnion) {
+					if (imgTags.includes(tag.toLowerCase()))
+						return true;
+				} else {
+					if (!imgTags.includes(tag.toLowerCase()))
+						return false;
+				}
 			}
-			return true;
+			return !filterUnion;
 		});
 		const total = filtered?.length || 0;
 		const imagesCount = filtered?.filter(img => img.type === 'image').length;
@@ -153,11 +163,19 @@ function App() {
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
 						<TagsEditor tags={filter} updateTags={setFilter} inMenu={true}></TagsEditor>
+						<div
+							className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
+							style={{width: '45px', height: '45px'}}
+							onClick={() => setFilterUnion(!filterUnion)}
+							title={filterUnion ? 'Union' : 'Intersection'}
+						>
+							<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' />
+						</div>
 						<TiArrowShuffle
 							title='Shuffle images'
 							color='#ffffff'
 							size={45}
-							className='mx-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2'
+							className='mx-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
 							onClick={shuffleImages}
 						>
 						</TiArrowShuffle>
