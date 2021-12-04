@@ -61,7 +61,7 @@ module.exports.addImages = function(images) {
 
 module.exports.getImages = function(category, tags = []) {
 	const q = db.prepare('SELECT * FROM IMAGES WHERE category = $category');
-	const images = q.all({category}).map(e => ({...e, tags: e.tags.split(',')}));
+	const images = q.all({category}).map(e => ({...e, tags: e.tags === '' ? [] : e.tags.split(',')}));
 	return images.filter(img => {
 		for (const tag of tags) {
 			if (!img.tags.includes(tag))
