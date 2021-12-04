@@ -135,7 +135,8 @@ function App() {
 					<ImageAdder
 						categories={categories}
 						close={() => setIsAdding(false)}
-						addImportedImages={addImportedImages}>
+						addImportedImages={addImportedImages}
+						selected={selected}>
 					</ImageAdder> : ''}
 				{editing ?
 					<ImageAdder
@@ -144,7 +145,7 @@ function App() {
 						editing={images[selected]?.find(img => img.id === editing)}
 						edit={editImage}
 						delete={deleteImage}
-					>
+						selected={selected}>
 					</ImageAdder>
 					: ''
 				}

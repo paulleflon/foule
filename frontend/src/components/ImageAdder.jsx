@@ -128,7 +128,8 @@ class ImageAdder extends React.Component {
 						<div className='font-title text-xl text-white'>Category</div>
 						<select ref={this.inputs.category}>
 							<option className='font-bold' disabled>Select a category</option>
-							{this.props.categories.map(c => <option key={c}>{c}</option>)}
+							<option>{this.props.selected}</option>
+							{this.props.categories.map(c => c === this.props.selected ? null : <option key={c}>{c}</option>)}
 						</select>
 					</div>
 					<div className='absolute bottom-0 right-0 m-2 '>
