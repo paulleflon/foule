@@ -124,17 +124,13 @@ function App() {
 		);
 	} else {
 		const filtered = images[selected]?.filter(img => {
+			if (filter.length === 0) return true;
 			const imgTags = img.tags.map(t => t.toLowerCase());
-			for (const tag of filter) {
-				if (filterUnion) {
-					if (imgTags.includes(tag.toLowerCase()))
-						return true;
-				} else {
-					if (!imgTags.includes(tag.toLowerCase()))
-						return false;
-				}
+			if (filterUnion) {
+				return filter.some(f => imgTags.includes(f.toLowerCase()));
+			} else {
+				return filter.every(f => imgTags.includes(f.toLowerCase()));
 			}
-			return !filterUnion;
 		});
 		const total = filtered?.length || 0;
 		const imagesCount = filtered?.filter(img => img.type === 'image').length;
