@@ -80,6 +80,18 @@ module.exports.getImage = function(id) {
 		return null;
 };
 
+module.exports.editImage = function(id, tags, category) {
+	const q = db.prepare('UPDATE IMAGES SET category = $category, tags = $tags WHERE id = $id');
+	q.run({id, category, tags: tags.join(',')});
+	console.log(`Edited image ${id}.`);
+};
+
+module.exports.deleteImage = function(id) {
+	const q = db.prepare('DELETE FROM IMAGES WHERE id = $id');
+	q.run({id});
+	console.log(`Deleted image ${id}.`);
+};
+
 module.exports.getCategories = function() {
 	const q = db.prepare('SELECT name FROM CATEGORIES');
 	return q.all().map(row => row.name);

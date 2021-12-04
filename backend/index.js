@@ -77,6 +77,16 @@ app.get('/images/get/:category', (req, res) => {
 	res.send(result);
 });
 
+app.post('/images/edit/:id', (req, res) => {
+	db.editImage(req.params.id, req.body.tags, req.body.category);
+	res.status(200).send();
+});
+
+app.post('/images/delete/:id', (req, res) => {
+	db.deleteImage(req.params.id);
+	res.status(200).send();
+});
+
 app.get('/categories/get', (req, res) => {
 	const arr = db.getCategories();
 	res.send(arr);
