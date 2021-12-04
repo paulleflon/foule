@@ -10,7 +10,8 @@ body {
 	margin: 0;
 }
 
-.image-card:hover>.image-card-tags {
+.image-card:hover>.image-card-tags,
+.image-card:hover>.image-card-actions {
 	opacity: 1;
 }
 

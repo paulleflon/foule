@@ -95,7 +95,7 @@ export default function ImageCard(props) {
 					: null
 
 			}
-			<div className='absolute z-20 top-0 right-0 flex flex-row m-1'>
+			<div className='image-card-actions absolute z-20 top-0 right-0 flex flex-row m-1 opacity-0 transition-opacity duration-100'>
 				<a href={props.url} target='_blank'>
 					<MdOpenInNew color='#fff' size={24} title='Download' className='transform hover:translate-y-1 transition-all duration-100'></MdOpenInNew>
 				</a>
