@@ -103,7 +103,7 @@ function App() {
 							title='Shuffle images'
 							color='#ffffff'
 							size={45}
-							className='mr-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2'
+							className='mx-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2'
 							onClick={shuffleImages}
 						>
 						</TiArrowShuffle>
