@@ -111,13 +111,26 @@ function App() {
 					</div>
 				</div>
 				{filtered.length ?
-					(<div
-						className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 overflow-y-auto justify-center md:justify-between flex-col sm:flex-row items-center sm:items-start'
-						style={{flexFlow: 'wrap'}}
-						ref={galleryRef}
-					>
-						{filtered.map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
-					</div>)
+					(
+						<div className='relative overflow-y-auto'>
+							<div
+								className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center md:justify-between flex-col sm:flex-row items-center sm:items-start'
+								style={{flexFlow: 'wrap'}}
+								ref={galleryRef}
+							>
+								{filtered.map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
+							</div>
+							<div className='font-default text-gray-100 text-lg text-center my-4'>
+								<span className='font-bold'>{filtered.filter(img => img.type === 'image').length}</span> images,
+								<span className='font-bold'> {filtered.filter(img => img.type === 'video').length}</span> videos
+								{
+									filtered.length !== images[selected].length ?
+										<div className='text-sm text-italic'> <span className='font-bold'>{images[selected].length}</span> total entries in <span className='font-bold'>{selected}</span></div>
+										: ''
+								}
+							</div>
+						</div>
+					)
 					:
 					<div className='flex justify-center items-center h-full flex-col'>
 						<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
