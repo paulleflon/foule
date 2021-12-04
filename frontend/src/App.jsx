@@ -16,7 +16,7 @@ function App() {
 	const [images, setImages] = useState({});
 	const [isAdding, setIsAdding] = useState(false);
 	const [editing, setEditing] = useState(undefined);
-	const [filter, setFilter] = useState([]);
+	const [filter, setFilter] = useState({});
 	const [filterUnion, setFilterUnion] = useState(false);
 	const galleryRef = createRef();
 	useEffect(() => {
@@ -30,6 +30,8 @@ function App() {
 			res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selection}`);
 			const obj = {};
 			obj[selection] = res.data;
+			filter[selection] = [];
+			setFilter(filter);
 			setImages(obj);
 			setLoading(false);
 		}
@@ -44,6 +46,10 @@ function App() {
 		const obj = images;
 		obj[name] = res.data;
 		setImages(obj);
+		if (!filter[name]) {
+			filter[name] = [];
+			setFilter(filter);
+		}
 		setSelected(name);
 		localStorage.setItem('selectedCategory', name);
 	};
@@ -109,6 +115,12 @@ function App() {
 		setEditing(undefined);
 	};
 
+	const updateFilter = (tags) => {
+		const obj = {...filter};
+		obj[selected] = tags;
+		setFilter(obj);
+	};
+
 	useEffect(() => {
 		window.addEventListener('keydown', handleUserKeyPress);
 		return () => {
@@ -124,12 +136,12 @@ function App() {
 		);
 	} else {
 		const filtered = images[selected]?.filter(img => {
-			if (filter.length === 0) return true;
+			if (filter[selected].length === 0) return true;
 			const imgTags = img.tags.map(t => t.toLowerCase());
 			if (filterUnion) {
-				return filter.some(f => imgTags.includes(f.toLowerCase()));
+				return filter[selected].some(f => imgTags.includes(f.toLowerCase()));
 			} else {
-				return filter.every(f => imgTags.includes(f.toLowerCase()));
+				return filter[selected].every(f => imgTags.includes(f.toLowerCase()));
 			}
 		});
 		const total = filtered?.length || 0;
@@ -158,7 +170,7 @@ function App() {
 				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'>
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
-						<TagsEditor tags={filter} updateTags={setFilter} inMenu={true}></TagsEditor>
+					<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
 						<div
 							className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
 							style={{width: '45px', height: '45px'}}
@@ -221,6 +233,6 @@ function App() {
 			</div>
 		);
 	}
-}
+};
 
 export default App;

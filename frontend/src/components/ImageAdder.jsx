@@ -6,7 +6,6 @@ import TagsEditor from './TagsEditor';
 class ImageAdder extends React.Component {
 	constructor(props) {
 		super(props);
-		console.log(this.props);
 		this.state = {
 			images: [],
 			tags: this.props.editing ? this.props.editing.tags : [],
