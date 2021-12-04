@@ -1,5 +1,5 @@
 import {useEffect, createRef, useState} from 'react';
-import {MdDownload} from 'react-icons/md';
+import {MdDownload, MdOpenInNew} from 'react-icons/md';
 
 const MAX_HEIGHT = 300;
 
@@ -96,6 +96,9 @@ export default function ImageCard(props) {
 
 			}
 			<div className='absolute z-20 top-0 right-0 flex flex-row m-1'>
+				<a href={props.url} target='_blank'>
+					<MdOpenInNew color='#fff' size={24} title='Download' className='transform hover:translate-y-1 transition-all duration-100'></MdOpenInNew>
+				</a>
 				<MdDownload color='#fff' size={24} title='Download' className='transform hover:translate-y-1 transition-all duration-100' onClick={download}></MdDownload>
 			</div>
 			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate z-20'>
