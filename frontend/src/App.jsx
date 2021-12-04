@@ -92,6 +92,9 @@ function App() {
 			}
 			return true;
 		});
+		const total = filtered?.length || 0;
+		const imagesCount = filtered?.filter(img => img.type === 'image').length;
+		const videosCount = filtered?.filter(img => img.type === 'video').length;
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
 				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)} addImportedImages={addImportedImages}></ImageAdder> : ''}
@@ -110,7 +113,7 @@ function App() {
 						<CategorySelect categories={categories} selected={selected} select={select} delete={del}></CategorySelect>
 					</div>
 				</div>
-				{filtered.length ?
+				{total ?
 					(
 						<div className='relative overflow-y-auto'>
 							<div
@@ -121,10 +124,10 @@ function App() {
 								{filtered.map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
 							</div>
 							<div className='font-default text-gray-100 text-lg text-center my-4'>
-								<span className='font-bold'>{filtered.filter(img => img.type === 'image').length}</span> images,
-								<span className='font-bold'> {filtered.filter(img => img.type === 'video').length}</span> videos
+								<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},
+								<span className='font-bold'> {videosCount}</span> video{videosCount === 1 ? '' : 's'}
 								{
-									filtered.length !== images[selected].length ?
+									total !== images[selected].length ?
 										<div className='text-sm text-italic'> <span className='font-bold'>{images[selected].length}</span> total entries in <span className='font-bold'>{selected}</span></div>
 										: ''
 								}
