@@ -73,7 +73,7 @@ app.post('/images/add', (req, res) => {
 });
 
 app.get('/images/get/:category', (req, res) => {
-	const result = db.getImages(req.params.category, req.body.tags);
+	const result = db.getImages(req.params.category);
 	res.send(result);
 });
 
