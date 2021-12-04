@@ -103,6 +103,7 @@ module.exports.renameCategory = function(oldName, newName) {
 	if (!module.exports.getCategories().includes(oldName))
 		return false;
 	db.prepare('UPDATE CATEGORIES SET name = $newName WHERE name = $oldName').run({oldName, newName});
+	db.prepare('UPDATE IMAGES SET category = $newName WHERE category = $oldName').run({oldName, newName});
 	console.log(`Renamed category ${oldName} to ${newName}.`);
 };
 
