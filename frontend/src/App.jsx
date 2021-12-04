@@ -13,6 +13,7 @@ function App() {
 	const [isLoading, setLoading] = useState(true);
 	const [images, setImages] = useState({});
 	const [isAdding, setIsAdding] = useState(false);
+	const [editing, setEditing] = useState(undefined);
 	const [filter, setFilter] = useState([]);
 	const galleryRef = createRef();
 	useEffect(() => {
@@ -84,6 +85,27 @@ function App() {
 		}
 	};
 
+	const editImage = async (tags, category) => {
+		const obj = {...images};
+		obj[selected] = obj[selected].map(i => i.id === editing ? {...i, tags} : i);
+		if (category) {
+			const entry = obj[selected].find(i => i.id === editing);
+			obj[selected] = obj[selected].filter(i => i.id !== editing);
+			obj[category] = [...(obj[category] || []), entry];
+		}
+		await axios.post(`${process.env.REACT_APP_API}/images/edit/${editing}`, {tags, category: category || selected});
+		setImages(obj);
+		setEditing(undefined);
+	};
+
+	const deleteImage = async () => {
+		const obj = {...images};
+		obj[selected] = obj[selected].filter(i => i.id !== editing);
+		await axios.post(`${process.env.REACT_APP_API}/images/delete/${editing}`);
+		setImages(obj);
+		setEditing(undefined);
+	};
+
 	useEffect(() => {
 		window.addEventListener('keydown', handleUserKeyPress);
 		return () => {
@@ -109,7 +131,23 @@ function App() {
 		const videosCount = filtered?.filter(img => img.type === 'video').length;
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
-				{isAdding ? <ImageAdder categories={categories} close={() => setIsAdding(false)} addImportedImages={addImportedImages}></ImageAdder> : ''}
+				{isAdding ?
+					<ImageAdder
+						categories={categories}
+						close={() => setIsAdding(false)}
+						addImportedImages={addImportedImages}>
+					</ImageAdder> : ''}
+				{editing ?
+					<ImageAdder
+						categories={categories}
+						close={() => setEditing(undefined)}
+						editing={images[selected]?.find(img => img.id === editing)}
+						edit={editImage}
+						delete={deleteImage}
+					>
+					</ImageAdder>
+					: ''
+				}
 				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'>
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
@@ -138,7 +176,7 @@ function App() {
 								style={{flexFlow: 'wrap'}}
 								ref={galleryRef}
 							>
-								{filtered.map(image => (<ImageCard {...image} key={image.id}></ImageCard>))}
+								{filtered.map(image => (<ImageCard {...image} key={image.id} edit={() => setEditing(image.id)}></ImageCard>))}
 							</div>
 							<div className='font-default text-gray-100 text-lg text-center my-4'>
 								<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},

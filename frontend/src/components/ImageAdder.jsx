@@ -6,9 +6,10 @@ import TagsEditor from './TagsEditor';
 class ImageAdder extends React.Component {
 	constructor(props) {
 		super(props);
+		console.log(this.props);
 		this.state = {
 			images: [],
-			tags: [],
+			tags: this.props.editing ? this.props.editing.tags : [],
 		};
 		this.inputs = {
 			src: createRef(),
@@ -86,6 +87,11 @@ class ImageAdder extends React.Component {
 			});
 	}
 
+	edit() {
+		const category = this.inputs.category.current.value;
+		this.props.edit(this.state.tags, category !== this.props.editing.category ? category : undefined);
+	}
+
 	render() {
 		return (
 			<div className='z-50 image-adder-container fixed w-full h-full flex justify-center items-center bg-black bg-opacity-50'>
@@ -96,25 +102,27 @@ class ImageAdder extends React.Component {
 						color='#ffffff'
 						onClick={() => this.props.close()}
 					></MdClose>
-					<div className='image-adder uploader'>
-						<div className='image-adder-tab-title font-title text-4xl text-white py-4 px-2'>Add images</div>
-						<div className='added-images my-4 overflow-y-auto max-h-32'>
-							{
-								this.state.images.map((e, i) =>
-									<div className='flex text-white' key={`image-${i}`}>
-										<span className='inline-block w-3/4 truncate'>{e.url}</span>
-										<span className='mx-2 cursor-pointer' onClick={this.removeImage.bind(this, i)}><MdClose size='1.5em'></MdClose></span>
-									</div>
-								)}
+					{!this.props.editing &&
+						<div className='image-adder uploader'>
+							<div className='image-adder-tab-title font-title text-4xl text-white py-4 px-2'>Add images</div>
+							<div className='added-images my-4 overflow-y-auto max-h-32'>
+								{
+									this.state.images.map((e, i) =>
+										<div className='flex text-white' key={`image-${i}`}>
+											<span className='inline-block w-3/4 truncate'>{e.url}</span>
+											<span className='mx-2 cursor-pointer' onClick={this.removeImage.bind(this, i)}><MdClose size='1.5em'></MdClose></span>
+										</div>
+									)}
+							</div>
+							<div className='input-group flex'>
+								<input type='text' placeholder='Image/Video URL' className='font-default text-xl border-none h-8 px-2 w-1/2 rounded-none' ref={this.inputs.src} />
+								<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'image')}>Add</button>
+								<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'video')}>Add Video</button>
+							</div>
 						</div>
-						<div className='input-group flex'>
-							<input type='text' placeholder='Image/Video URL' className='font-default text-xl border-none h-8 px-2 w-1/2 rounded-none' ref={this.inputs.src} />
-							<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'image')}>Add</button>
-							<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'video')}>Add Video</button>
-						</div>
-					</div>
+					}
 					<div className='image-adder-metadata'>
-						<div className='image-adder-tab-title font-title text-4xl text-white py-4 px-2'>Set metadata</div>
+						<div className='image-adder-tab-title font-title text-4xl text-white py-4 px-2'>{this.props.editing ? 'Edit entry' : 'Set metadata'}</div>
 						<div className='font-title text-xl text-white'>Tags</div>
 						<TagsEditor tags={this.state.tags} updateTags={this.updateTags.bind(this)} />
 						<div className='font-title text-xl text-white'>Category</div>
@@ -123,7 +131,18 @@ class ImageAdder extends React.Component {
 							{this.props.categories.map(c => <option key={c}>{c}</option>)}
 						</select>
 					</div>
-					<button className='font-title text-xl text-white absolute bottom-0 right-0 m-2 border-2 border-white rounded-full px-4 py-1 hover:bg-white hover:bg-opacity-25 duration-200 transition-all' onClick={this.send.bind(this)}>Send</button>
+					<div className='absolute bottom-0 right-0 m-2 '>
+						{
+							this.props.editing &&
+							<button className='font-title text-xl text-red-500 border-2 border-red-500 rounded-full px-4 py-1 hover:bg-red-800 hover:bg-opacity-25 duration-200 transition-all' onClick={this.props.delete}>Delete</button>
+
+						}
+						<button
+							className='font-title text-xl text-white border-2 border-white rounded-full px-4 py-1 ml-4 hover:bg-white hover:bg-opacity-25 duration-200 transition-all'
+							onClick={this.props.editing ? this.edit.bind(this) : this.send.bind(this)}>
+							{this.props.editing ? 'Save' : 'Send'}
+						</button>
+					</div>
 				</div>
 			</div>
 		);
