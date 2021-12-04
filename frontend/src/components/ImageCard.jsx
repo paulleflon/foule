@@ -1,4 +1,5 @@
 import {useEffect, createRef, useState} from 'react';
+import {MdDownload} from 'react-icons/md';
 
 const MAX_HEIGHT = 300;
 
@@ -10,6 +11,7 @@ export default function ImageCard(props) {
 	const [w, setW] = useState(0);
 	const [h, setH] = useState(0);
 	const [bestUrl, setBestUrl] = useState(undefined);
+	const [isDownloading, setDownloading] = useState(false);
 	const togglePlaying = () => {
 		mediaRef.current[isPlaying ? 'pause' : 'play']();
 		setPlaying(!isPlaying);
@@ -39,6 +41,24 @@ export default function ImageCard(props) {
 		observer.observe(containerRef.current);
 	}, [containerRef, isLoaded, props.id, props.height, props.width]);
 
+	const download = () => {
+		setDownloading(true);
+		fetch(`${process.env.REACT_APP_API}/download/${props.id}`)
+			.then(response => response.blob())
+			.then(blob => {
+				const blobURL = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = blobURL;
+				a.style = 'display: none';
+				a.download = props.id;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				setDownloading(false);
+			}).catch(() => null);
+	};
+
+
 	return (
 		<div
 			id={props.id}
@@ -51,7 +71,7 @@ export default function ImageCard(props) {
 			}}
 			ref={containerRef}
 		>
-			<div className='loader absolute w-4 h-4 z-0'></div>
+			<div className={`loader absolute w-4 h-4 ${isDownloading ? 'z-20' : 'z-0'}`}></div>
 			{
 				isLoaded ?
 					props.type === 'image' ?
@@ -75,6 +95,9 @@ export default function ImageCard(props) {
 					: null
 
 			}
+			<div className='absolute z-20 top-0 right-0 flex flex-row m-1'>
+				<MdDownload color='#fff' size={24} title='Download' className='transform hover:translate-y-1 transition-all duration-100' onClick={download}></MdDownload>
+			</div>
 			<div className='image-card-tags opacity-0 absolute bottom-0 left-0 w-full box-border px-1 bg-black bg-opacity-50 text-white truncate z-20'>
 				{props.tags.join(', ')}
 			</div>
