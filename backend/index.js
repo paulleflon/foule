@@ -13,6 +13,23 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.get('/download/:id', async (req, res) => {
+	const {id} = req.params;
+	const {url, type} = await db.getImage(id);
+	if (type === 'image') {
+		const data = await fetch(url);
+		let buffer = await data.buffer();
+		const image = await sharp(buffer).toBuffer();
+		res.set('Content-Type', 'image/jpeg');
+		res.send(image);
+	} else {
+		const data = await fetch(url);
+		const buffer = await data.buffer();
+		res.set('Content-Type', 'video/mp4');
+		res.send(buffer);
+	}
+});
+
 app.get('/posters/:id', async (req, res) => {
 	const id = req.params.id;
 	let {width, height} = req.query;
