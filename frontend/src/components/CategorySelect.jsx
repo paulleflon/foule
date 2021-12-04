@@ -60,7 +60,7 @@ export default class CategorySelect extends React.Component {
 					<div className='p-2'>
 						<input
 							onBlur={e => {e.stopPropagation(); this.whole.current.focus();}}
-							className='px-2 outline-none border-2 rounded-md w-full md:w-3/4 m-auto focus:border-blue-400 text-lg transition-all duration-100'
+							className='px-2 outline-none border-2 rounded-md w-full m-auto focus:border-blue-400 text-lg transition-all duration-100'
 							type='text'
 							ref={this.input}
 							onChange={this.onChange.bind(this)}
