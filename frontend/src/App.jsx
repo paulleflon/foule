@@ -38,7 +38,7 @@ function App() {
 		}
 		const res = await axios.get(`${process.env.REACT_APP_API}/images/get/${name}`);
 		const obj = images;
-		obj[name] = res.data.sort(() => Math.random() - 0.5);
+		obj[name] = res.data;
 		setImages(obj);
 		setSelected(name);
 		localStorage.setItem('selectedCategory', name);
