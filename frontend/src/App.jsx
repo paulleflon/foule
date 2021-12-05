@@ -8,6 +8,7 @@ import CategorySelect from './components/CategorySelect';
 import ImageAdder from './components/ImageAdder';
 import ImageCard from './components/ImageCard';
 import TagsEditor from './components/TagsEditor';
+import ImageViewer from './components/ImageViewer';
 
 function App() {
 	const [categories, setCategories] = useState();
@@ -18,6 +19,7 @@ function App() {
 	const [editing, setEditing] = useState(undefined);
 	const [filter, setFilter] = useState({});
 	const [filterUnion, setFilterUnion] = useState(false);
+	const [viewing, setViewing] = useState(undefined);
 	const galleryRef = createRef();
 	useEffect(() => {
 		async function fetchData() {
@@ -77,10 +79,32 @@ function App() {
 		}, 250);
 	}, [galleryRef, images, selected]);
 
+	const previousImage = () => {
+		const i = viewing;
+		if (i - 1 < 0)
+			setViewing(images[selected].length - 1);
+		else
+			setViewing(i - 1);
+	};
+
+	const nextImage = () => {
+		const i = viewing;
+		if (i + 1 >= images[selected].length)
+			setViewing(0);
+		else
+			setViewing(i + 1);
+	};
+
 	const handleUserKeyPress = useCallback(e => {
 		if (e.key === 's')
 			shuffleImages();
-	}, [shuffleImages]);
+		if (e.key === 'ArrowRight' && viewing !== undefined)
+			nextImage();
+		if (e.key === 'ArrowLeft' && viewing !== undefined)
+			previousImage();
+		if (e.key === 'Escape')
+			setViewing(undefined);
+	}, [shuffleImages, previousImage, nextImage, viewing]);
 
 	const renameCategory = async (oldName, newName) => {
 		await axios.post(`${process.env.REACT_APP_API}/categories/rename`, {oldName, newName});
@@ -149,6 +173,7 @@ function App() {
 		const videosCount = filtered?.filter(img => img.type === 'video').length;
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
+				{viewing !== undefined && <ImageViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)}/>}
 				{isAdding ?
 					<ImageAdder
 						categories={categories}
@@ -170,7 +195,7 @@ function App() {
 				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'>
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
-					<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
+						<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
 						<div
 							className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
 							style={{width: '45px', height: '45px'}}
@@ -203,7 +228,7 @@ function App() {
 								style={{flexFlow: 'wrap'}}
 								ref={galleryRef}
 							>
-								{filtered.map(image => (<ImageCard {...image} key={image.id} edit={() => setEditing(image.id)}></ImageCard>))}
+								{filtered.map((image, i) => (<ImageCard {...image} key={image.id} edit={() => setEditing(image.id)} onClick={() => setViewing(i)} ></ImageCard>))}
 							</div>
 							<div className='font-default text-gray-100 text-lg text-center my-4'>
 								<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},
@@ -225,7 +250,7 @@ function App() {
 					</div>
 				}
 				<div
-					className='fixed bottom-0 right-0 m-5 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2 z-50'
+					className='fixed bottom-0 right-0 m-5 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2 z-40'
 					onClick={() => setIsAdding(true)}
 				>
 					<MdAdd color='#ffffff' size={38}></MdAdd>

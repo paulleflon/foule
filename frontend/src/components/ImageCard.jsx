@@ -6,17 +6,11 @@ const MAX_HEIGHT = 300;
 export default function ImageCard(props) {
 	const mediaRef = createRef();
 	const containerRef = createRef();
-	const [isPlaying, setPlaying] = useState(false);
 	const [isLoaded, setLoaded] = useState(false);
 	const [w, setW] = useState(0);
 	const [h, setH] = useState(0);
 	const [bestUrl, setBestUrl] = useState(undefined);
 	const [isDownloading, setDownloading] = useState(false);
-	const togglePlaying = () => {
-		mediaRef.current[isPlaying ? 'pause' : 'play']();
-		setPlaying(!isPlaying);
-	};
-
 	useEffect(() => {
 		const handleResize = () => {
 			if (document.body.clientWidth < 640) {
@@ -69,29 +63,18 @@ export default function ImageCard(props) {
 				height: h + 'px',
 				minHeight: '100px'
 			}}
+			onClick={props.onClick}
 			ref={containerRef}
 		>
 			<div className={`loader absolute w-4 h-4 ${isDownloading ? 'z-20' : 'z-0'}`}></div>
 			{
 				isLoaded ?
-					props.type === 'image' ?
-						<img
-							src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
-							alt={props.tags.join(', ')}
-							className='block w-full h-full object-contain z-10'
-							ref={mediaRef}
-						/>
-						: <video
-							className='block w-full h-full object-contain z-10'
-							src={props.url}
-							ref={mediaRef}
-							autoPlay={false}
-							loop
-							playsInline
-							muted
-							poster={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
-							onClick={() => togglePlaying()}
-						></video>
+					<img
+						src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
+						alt={props.tags.join(', ')}
+						className='block w-full h-full object-contain z-10'
+						ref={mediaRef}
+					/>
 					: null
 
 			}
