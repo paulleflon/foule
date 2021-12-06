@@ -3,10 +3,13 @@
 	"version": "0.1.0",
 	"scripts": {
 		"frontend": "cd frontend && npm start",
+		"frontend-prod": "cd frontend && npm run build && npx serve -s build",
 		"backend": "cd backend && npm start",
-		"start": "concurrently -k -n 'frontend,backend' -c 'green,blue' \"npm:frontend\" \"npm:backend\""
+		"start": "concurrently -k -n 'frontend,backend' -c 'green,blue' \"npm:frontend\" \"npm:backend\"",
+		"prod": "concurrently -k -n 'frontend,backend' -c 'green,blue' \"npm:frontend-prod\" \"npm:backend\""
 	},
 	"dependencies": {
-		"concurrently": "^6.4.0"
+		"concurrently": "^6.4.0",
+		"serve": "^13.0.2"
 	}
 }
