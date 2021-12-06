@@ -21,6 +21,25 @@ function App() {
 	const [filterUnion, setFilterUnion] = useState(false);
 	const [viewing, setViewing] = useState(undefined);
 	const galleryRef = createRef();
+	let filtered,
+		total,
+		imagesCount,
+		videosCount;
+	if (!isLoading) {
+		filtered = images[selected]?.filter(img => {
+			if (filter[selected].length === 0) return true;
+			const imgTags = img.tags.map(t => t.toLowerCase());
+			if (filterUnion) {
+				return filter[selected].some(f => imgTags.includes(f.toLowerCase()));
+			} else {
+				return filter[selected].every(f => imgTags.includes(f.toLowerCase()));
+			}
+		});
+		total = filtered?.length || 0;
+		imagesCount = filtered?.filter(img => img.type === 'image').length;
+		videosCount = filtered?.filter(img => img.type === 'video').length;
+	}
+
 	useEffect(() => {
 		async function fetchData() {
 			let res = await axios.get(`${process.env.REACT_APP_API}/categories/get`);
@@ -32,8 +51,7 @@ function App() {
 			res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selection}`);
 			const obj = {};
 			obj[selection] = res.data;
-			filter[selection] = [];
-			setFilter(filter);
+			setFilter(f => ({...f, [selection]: []}));
 			setImages(obj);
 			setLoading(false);
 		}
@@ -79,21 +97,21 @@ function App() {
 		}, 250);
 	}, [galleryRef, images, selected]);
 
-	const previousImage = () => {
+	const previousImage = useCallback(() => {
 		const i = viewing;
 		if (i - 1 < 0)
-			setViewing(images[selected].length - 1);
+			setViewing(total - 1);
 		else
 			setViewing(i - 1);
-	};
+	});
 
-	const nextImage = () => {
+	const nextImage = useCallback(() => {
 		const i = viewing;
-		if (i + 1 >= images[selected].length)
+		if (i + 1 >= total)
 			setViewing(0);
 		else
 			setViewing(i + 1);
-	};
+	});
 
 	const handleUserKeyPress = useCallback(e => {
 		if (e.key === 's')
@@ -144,7 +162,6 @@ function App() {
 		obj[selected] = tags;
 		setFilter(obj);
 	};
-
 	useEffect(() => {
 		window.addEventListener('keydown', handleUserKeyPress);
 		return () => {
@@ -159,21 +176,9 @@ function App() {
 			</div>
 		);
 	} else {
-		const filtered = images[selected]?.filter(img => {
-			if (filter[selected].length === 0) return true;
-			const imgTags = img.tags.map(t => t.toLowerCase());
-			if (filterUnion) {
-				return filter[selected].some(f => imgTags.includes(f.toLowerCase()));
-			} else {
-				return filter[selected].every(f => imgTags.includes(f.toLowerCase()));
-			}
-		});
-		const total = filtered?.length || 0;
-		const imagesCount = filtered?.filter(img => img.type === 'image').length;
-		const videosCount = filtered?.filter(img => img.type === 'video').length;
 		return (
 			<div className='App bg-gray-800 w-full h-full flex flex-col'>
-				{viewing !== undefined && <ImageViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)}/>}
+				{viewing !== undefined && <ImageViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)} />}
 				{isAdding ?
 					<ImageAdder
 						categories={categories}
