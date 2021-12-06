@@ -11,21 +11,31 @@ import TagsEditor from './components/TagsEditor';
 import ImageViewer from './components/ImageViewer';
 
 function App() {
+	// Array of all categories
 	const [categories, setCategories] = useState();
+	// Currently selected category
 	const [selected, setSelected] = useState();
+	// Whether the app is loading
 	const [isLoading, setLoading] = useState(true);
+	// Object of all image arrays, keyed by category
 	const [images, setImages] = useState({});
+	// Whether the user is currently adding an image
 	const [isAdding, setIsAdding] = useState(false);
+	// Whether the user is currently editing an image
 	const [editing, setEditing] = useState(undefined);
+	// The tags to filter in the gallery
 	const [filter, setFilter] = useState({});
+	// Whether the filter tags have to be applied by union or intersection (false is intersection)
 	const [filterUnion, setFilterUnion] = useState(false);
+	// The index of the image currently being viewed in the selected category
 	const [viewing, setViewing] = useState(undefined);
+	// Ref to the image gallery container
 	const galleryRef = createRef();
-	let filtered,
-		total,
-		imagesCount,
-		videosCount;
-	if (!isLoading) {
+	let filtered, // Filtered images array
+		total, // Total number of displayed entries (image and video)
+		imagesCount, // Number of images in the selected category
+		videosCount; // Number of videos in the selected category
+	if (!isLoading) { // These are only used if the app is loaded
 		filtered = images[selected]?.filter(img => {
 			if (filter[selected].length === 0) return true;
 			const imgTags = img.tags.map(t => t.toLowerCase());
@@ -40,6 +50,8 @@ function App() {
 		videosCount = filtered?.filter(img => img.type === 'video').length;
 	}
 
+	// Startup effect
+	// Loads categories, selects a category (from localStorage or the first one) and loads images from it.
 	useEffect(() => {
 		async function fetchData() {
 			let res = await axios.get(`${process.env.REACT_APP_API}/categories/get`);
@@ -57,6 +69,8 @@ function App() {
 		}
 		fetchData();
 	}, []);
+
+	// Selects a category, or creates it if it doesn't exist
 	const select = async (name) => {
 		if (!categories.includes(name)) {
 			await axios.post(`${process.env.REACT_APP_API}/categories/add`, {name});
@@ -73,11 +87,14 @@ function App() {
 		setSelected(name);
 		localStorage.setItem('selectedCategory', name);
 	};
+
+	// Deletes a category
 	const del = async (name) => {
 		await axios.post(`${process.env.REACT_APP_API}/categories/delete`, {name});
 		setCategories(categories.filter(c => c !== name));
 	};
 
+	// Adds to the app's state images that have been sent to the server
 	const addImportedImages = (added, category) => {
 		const obj = {...images};
 		obj[category] = [...(obj[category] || []), ...added];
@@ -85,6 +102,7 @@ function App() {
 		setIsAdding(false);
 	};
 
+	// Shuffles the images in the selected category
 	const shuffleImages = useCallback(() => {
 		const gallery = galleryRef.current;
 		if (!gallery) return;
@@ -97,6 +115,7 @@ function App() {
 		}, 250);
 	}, [galleryRef, images, selected]);
 
+	// Views the previous entry.
 	const previousImage = useCallback(() => {
 		const i = viewing;
 		if (i - 1 < 0)
@@ -105,6 +124,7 @@ function App() {
 			setViewing(i - 1);
 	});
 
+	// Views the next entry.
 	const nextImage = useCallback(() => {
 		const i = viewing;
 		if (i + 1 >= total)
@@ -113,6 +133,8 @@ function App() {
 			setViewing(i + 1);
 	});
 
+	// Event handler for keypresses
+	// Handles shuffling images and viewing previous/next images
 	const handleUserKeyPress = useCallback(e => {
 		if (e.key === 's')
 			shuffleImages();
@@ -124,6 +146,7 @@ function App() {
 			setViewing(undefined);
 	}, [shuffleImages, previousImage, nextImage, viewing]);
 
+	// Renames a category and update the images object.
 	const renameCategory = async (oldName, newName) => {
 		await axios.post(`${process.env.REACT_APP_API}/categories/rename`, {oldName, newName});
 		setCategories(categories.map(c => c === oldName ? newName : c));
@@ -136,6 +159,7 @@ function App() {
 		}
 	};
 
+	// Edits an entry, both in the images object and in the server
 	const editImage = async (tags, category) => {
 		const obj = {...images};
 		obj[selected] = obj[selected].map(i => i.id === editing ? {...i, tags} : i);
@@ -149,6 +173,7 @@ function App() {
 		setEditing(undefined);
 	};
 
+	// Deletes an entry, both in the images object and in the server
 	const deleteImage = async () => {
 		const obj = {...images};
 		obj[selected] = obj[selected].filter(i => i.id !== editing);
@@ -157,11 +182,14 @@ function App() {
 		setEditing(undefined);
 	};
 
+	// Updates the filter tags
 	const updateFilter = (tags) => {
 		const obj = {...filter};
 		obj[selected] = tags;
 		setFilter(obj);
 	};
+
+	// Binds the event listener for keypresses
 	useEffect(() => {
 		window.addEventListener('keydown', handleUserKeyPress);
 		return () => {
@@ -197,7 +225,7 @@ function App() {
 					</ImageAdder>
 					: ''
 				}
-				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'>
+				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'> {/* MenuBar */}
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
 						<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
@@ -207,7 +235,7 @@ function App() {
 							onClick={() => setFilterUnion(!filterUnion)}
 							title={filterUnion ? 'Union' : 'Intersection'}
 						>
-							<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' />
+							<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' /> 
 						</div>
 						<TiArrowShuffle
 							title='Shuffle images'
@@ -227,7 +255,7 @@ function App() {
 				</div>
 				{total ?
 					(
-						<div className='relative overflow-y-auto'>
+						<div className='relative overflow-y-auto'> {/* Image Gallery */}
 							<div
 								className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center md:justify-between flex-col sm:flex-row items-center sm:items-start'
 								style={{flexFlow: 'wrap'}}
@@ -235,7 +263,7 @@ function App() {
 							>
 								{filtered.map((image, i) => (<ImageCard {...image} key={image.id} edit={() => setEditing(image.id)} onClick={() => setViewing(i)} ></ImageCard>))}
 							</div>
-							<div className='font-default text-gray-100 text-lg text-center my-4'>
+							<div className='font-default text-gray-100 text-lg text-center my-4'> {/* Entries stats */}
 								<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},
 								<span className='font-bold'> {videosCount}</span> video{videosCount === 1 ? '' : 's'}
 								{
@@ -247,7 +275,7 @@ function App() {
 						</div>
 					)
 					:
-					<div className='flex justify-center items-center h-full flex-col'>
+					<div className='flex justify-center items-center h-full flex-col'> {/* 'No Images' indicator */}
 						<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
 							<MdOutlineNoPhotography size={48} color='#aaaaaa'></MdOutlineNoPhotography>
 						</div>
