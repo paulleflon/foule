@@ -225,7 +225,10 @@ function App() {
 					</ImageAdder>
 					: ''
 				}
-				<div className='w-full bg-gray-900 py-4 px-4 flex flex-row items-center justify-end md:justify-between shadow-sm'> {/* MenuBar */}
+				{/* MenuBar */}
+				<div
+					className='w-full md:w-11/12 bg-gray-900 py-4 px-4 md:mx-auto md:m-2 flex flex-row items-center justify-end md:justify-between shadow-xl md:rounded-2xl'
+				>
 					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 					<div className='flex flex-row items-center'>
 						<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
@@ -235,7 +238,7 @@ function App() {
 							onClick={() => setFilterUnion(!filterUnion)}
 							title={filterUnion ? 'Union' : 'Intersection'}
 						>
-							<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' /> 
+							<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' />
 						</div>
 						<TiArrowShuffle
 							title='Shuffle images'
