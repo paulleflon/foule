@@ -43,24 +43,28 @@ app.get('/posters/:id', async (req, res) => {
 		let img = await fetch(data.url);
 		if (img.status !== 200)
 			return res.redirect(data.url);
-		sharp(await img.buffer())
-			.resize(width, height)
-			.toBuffer()
-			.then(data => {
+		try {
+			const data = await sharp(await img.buffer())
+				.resize(width, height)
+				.toBuffer();
+			res.set('Content-Type', 'image/jpeg');
+			res.send(data);
+		} catch (_) {
+			res.redirect(data.url);
+		}
+	} else {
+		cp.exec(`ffmpeg -i "${data.url}" -y -vf scale=-2:720 -vframes 1 "temp/${id}.jpg"`, async (err, stdout, stderr) => {
+			let img = readFileSync(`temp/${id}.jpg`);
+			try {
+				const data = await sharp(img)
+					.resize(width, height)
+					.toBuffer();
 				res.set('Content-Type', 'image/jpeg');
 				res.send(data);
-			});
-	} else {
-		cp.exec(`ffmpeg -i "${data.url}" -y -vf scale=-2:720 -vframes 1 "temp/${id}.jpg"`, (err, stdout, stderr) => {
-			let img = readFileSync(`temp/${id}.jpg`);
-			sharp(img)
-				.resize(width, height)
-				.toBuffer()
-				.then(data => {
-					res.set('Content-Type', 'image/jpeg');
-					res.send(data);
-					unlinkSync(`temp/${id}.jpg`);
-				});
+				unlinkSync(`temp/${id}.jpg`);
+			} catch (_) {
+				res.redirect(data.url); //temp
+			}
 		});
 
 	}
