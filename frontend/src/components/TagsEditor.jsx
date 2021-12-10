@@ -37,7 +37,7 @@ function TagsEditor({tags, updateTags, inMenu}) {
 
 			</div>
 			<input type='text' placeholder={inMenu ? 'Filter...' : 'Tag'}
-				className='font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-auto' onKeyDown={onDown} ref={inputRef} />
+				className='font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48' onKeyDown={onDown} ref={inputRef} />
 		</div>
 	);
 }
