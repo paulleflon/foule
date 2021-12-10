@@ -295,7 +295,7 @@ function App() {
 				(
 					<div className='relative overflow-y-auto'> {/* Image Gallery */}
 						<div
-							className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center md:justify-between flex-col sm:flex-row items-center sm:items-start'
+							className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center flex-col sm:flex-row items-center sm:items-start'
 							style={{flexFlow: 'wrap'}}
 							ref={galleryRef}
 						>
