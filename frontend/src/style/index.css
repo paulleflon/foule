@@ -10,6 +10,10 @@ body {
 	margin: 0;
 }
 
+.image-card {
+	animation: imageCardBackground 1.5s ease infinite;
+}
+
 .image-card:hover>.image-card-tags,
 .image-card:hover>.image-card-actions {
 	opacity: 1;
@@ -27,6 +31,12 @@ body {
 	border-top-color: transparent;
 	border-radius: 50%;
 	animation: spinning 1s linear infinite;
+}
+
+@keyframes imageCardBackground {
+	50% {
+		background-color: #718096;
+	}
 }
 
 @keyframes spinning {

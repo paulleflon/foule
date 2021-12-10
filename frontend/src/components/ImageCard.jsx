@@ -56,7 +56,7 @@ export default function ImageCard(props) {
 	return (
 		<div
 			id={props.id}
-			className='image-card cursor-pointer relative m-1 flex items-center justify-center'
+			className='image-card cursor-pointer relative m-1 flex items-center justify-center rounded-md bg-gray-700 overflow-hidden'
 			title={props.tags.join(', ')}
 			style={(document.body.clientWidth < 640) ? {width: '80%', height: !isLoaded ? '80%' : 'auto', minHeight: '100px'} : {
 				width: w + 'px',
@@ -66,20 +66,20 @@ export default function ImageCard(props) {
 			onClick={props.onClick}
 			ref={containerRef}
 		>
-			<div className={`loader absolute w-4 h-4 ${isDownloading ? 'z-20' : 'z-0'}`}></div>
+			{isDownloading && <div className={`loader absolute w-4 h-4 z-20`}></div>}
 			{
 				isLoaded ?
 					<img
 						src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
 						alt={props.tags.join(', ')}
-						className='block w-full h-full object-contain z-10'
+						className='block w-full h-full object-cover z-10'
 						ref={mediaRef}
 					/>
 					: null
 
 			}
 			<div className='image-card-actions absolute z-20 top-0 right-0 flex flex-row m-1 opacity-0 transition-opacity duration-100'>
-				<MdEdit color='#fff' size={24} onClick={e => {e.stopPropagation(); props.edit()}} title={'Edit'} className='transform hover:translate-y-1 transition-all duration-100'></MdEdit>
+				<MdEdit color='#fff' size={24} onClick={e => {e.stopPropagation(); props.edit();}} title={'Edit'} className='transform hover:translate-y-1 transition-all duration-100'></MdEdit>
 				<a href={props.url} target='_blank' rel='noreferrer' onClick={e => e.stopPropagation()}>
 					<MdOpenInNew color='#fff' size={24} title='Download' className='transform hover:translate-y-1 transition-all duration-100'></MdOpenInNew>
 				</a>
