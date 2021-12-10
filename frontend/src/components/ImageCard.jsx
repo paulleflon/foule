@@ -1,39 +1,22 @@
 import {createRef, useEffect, useState} from 'react';
 import {MdDownload, MdEdit, MdOpenInNew} from 'react-icons/md';
 
-const MAX_HEIGHT = 300;
 
 export default function ImageCard(props) {
 	const mediaRef = createRef();
 	const containerRef = createRef();
 	const [isLoaded, setLoaded] = useState(false);
-	const [w, setW] = useState(0);
-	const [h, setH] = useState(0);
-	const [bestUrl, setBestUrl] = useState(undefined);
 	const [isDownloading, setDownloading] = useState(false);
 	useEffect(() => {
-		const handleResize = () => {
-			if (document.body.clientWidth < 640) {
-				setW(640);
-				setH(640 * props.height / props.width);
-				setBestUrl(`${process.env.REACT_APP_API}/posters/${props.id}?width=${640}&height=${640 * props.height / props.width}`);
-			} else {
-				setW(MAX_HEIGHT * props.width / props.height);
-				setH(MAX_HEIGHT);
-			}
-		};
-		window.addEventListener('resize', handleResize);
-		handleResize();
 		const observer = new IntersectionObserver(([entry]) => {
-			if (entry.isIntersecting && !isLoaded) {
+			if (entry.isIntersecting && !isLoaded)
 				setLoaded(true);
-			}
 		}, {
 			root: null,
 			threshold: 0.01
 		});
 		observer.observe(containerRef.current);
-	}, [containerRef, isLoaded, props.id, props.height, props.width]);
+	}, [containerRef, isLoaded, props.id]);
 
 	const download = () => {
 		setDownloading(true);
@@ -58,11 +41,6 @@ export default function ImageCard(props) {
 			id={props.id}
 			className='image-card cursor-pointer relative m-1 flex items-center justify-center rounded-md bg-gray-700 overflow-hidden'
 			title={props.tags.join(', ')}
-			style={(document.body.clientWidth < 640) ? {width: '80%', height: !isLoaded ? '80%' : 'auto', minHeight: '100px'} : {
-				width: w + 'px',
-				height: h + 'px',
-				minHeight: '100px'
-			}}
 			onClick={props.onClick}
 			ref={containerRef}
 		>
@@ -70,9 +48,11 @@ export default function ImageCard(props) {
 			{
 				isLoaded ?
 					<img
-						src={bestUrl || `${process.env.REACT_APP_API}/posters/${props.id}?width=${Math.floor(w * 1.5)}&height=${Math.floor(h * 1.5)}`}
+						src={`${process.env.REACT_APP_API}/posters/${props.id}`}
 						alt={props.tags.join(', ')}
 						className='block w-full h-full object-cover z-10'
+						width={300}
+						height={300}
 						ref={mediaRef}
 					/>
 					: null

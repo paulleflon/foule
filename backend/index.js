@@ -32,20 +32,17 @@ app.get('/download/:id', async (req, res) => {
 
 app.get('/posters/:id', async (req, res) => {
 	const id = req.params.id;
-	let {width, height} = req.query;
 	const data = db.getImage(id);
 	if (!data) {
 		return res.status(404).send('Not found');
 	}
-	width = parseInt(width) || data.width;
-	height = parseInt(height) || data.height;
 	if (data.type === 'image') {
 		let img = await fetch(data.url);
 		if (img.status !== 200)
 			return res.redirect(data.url);
 		try {
 			const data = await sharp(await img.buffer())
-				.resize(width, height)
+				.resize(400, 400)
 				.toBuffer();
 			res.set('Content-Type', 'image/jpeg');
 			res.send(data);
@@ -57,7 +54,7 @@ app.get('/posters/:id', async (req, res) => {
 			try {
 				let img = readFileSync(`temp/${id}.jpg`);
 				const data = await sharp(img)
-					.resize(width, height)
+					.resize(400, 400)
 					.toBuffer();
 				res.set('Content-Type', 'image/jpeg');
 				res.send(data);
