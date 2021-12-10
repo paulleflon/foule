@@ -80,7 +80,7 @@ export default function ImageCard(props) {
 			}
 			<div className='image-card-actions absolute z-20 top-0 right-0 flex flex-row m-1 opacity-0 transition-opacity duration-100'>
 				<MdEdit color='#fff' size={24} onClick={e => {e.stopPropagation(); props.edit()}} title={'Edit'} className='transform hover:translate-y-1 transition-all duration-100'></MdEdit>
-				<a href={props.url} target='_blank' onClick={e => e.stopPropagation()}>
+				<a href={props.url} target='_blank' rel='noreferrer' onClick={e => e.stopPropagation()}>
 					<MdOpenInNew color='#fff' size={24} title='Download' className='transform hover:translate-y-1 transition-all duration-100'></MdOpenInNew>
 				</a>
 				<MdDownload color='#fff' size={24} title='Download' className='transform hover:translate-y-1 transition-all duration-100' onClick={e => {e.stopPropagation(); download();}}></MdDownload>

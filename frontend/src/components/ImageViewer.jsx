@@ -1,5 +1,3 @@
-import e from 'cors';
-import {useEffect} from 'react';
 import {MdChevronLeft, MdChevronRight, MdClose} from 'react-icons/md';
 
 let touchStartX = 0;

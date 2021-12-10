@@ -137,7 +137,7 @@ function App() {
 			setViewing(total - 1);
 		else
 			setViewing(i - 1);
-	});
+	}, [viewing, total]);
 
 	// Views the next entry.
 	const nextImage = useCallback(() => {
@@ -146,7 +146,7 @@ function App() {
 			setViewing(0);
 		else
 			setViewing(i + 1);
-	});
+	}, [viewing, total]);
 
 	// Event handler for keypresses
 	// Handles shuffling images and viewing previous/next images
