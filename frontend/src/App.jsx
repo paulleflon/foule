@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, {useEffect, useState, useCallback, createRef} from 'react';
 import {MdOutlineNoPhotography, MdAdd} from 'react-icons/md';
+import {VscDebugDisconnect} from 'react-icons/vsc';
 import JoinFull from './assets/join_full.png';
 import JoinInner from './assets/join_inner.png';
 import {TiArrowShuffle} from 'react-icons/ti';
@@ -17,6 +18,8 @@ function App() {
 	const [selected, setSelected] = useState();
 	// Whether the app is loading
 	const [isLoading, setLoading] = useState(true);
+	// Whether loading failed
+	const [isFailing, setFailing] = useState(false);
 	// Object of all image arrays, keyed by category
 	const [images, setImages] = useState({});
 	// Whether the user is currently adding an image
@@ -50,24 +53,36 @@ function App() {
 		videosCount = filtered?.filter(img => img.type === 'video').length;
 	}
 
-	// Startup effect
 	// Loads categories, selects a category (from localStorage or the first one) and loads images from it.
-	useEffect(() => {
-		async function fetchData() {
-			let res = await axios.get(`${process.env.REACT_APP_API}/categories/get`);
-			setCategories(res.data);
-			const savedSelection = localStorage.getItem('selectedCategory');
-			const selection = res.data.includes(savedSelection) ? savedSelection : res.data[0];
-			setSelected(selection);
-
-			res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selection}`);
-			const obj = {};
-			obj[selection] = res.data;
-			setFilter(f => ({...f, [selection]: []}));
-			setImages(obj);
+	async function initialFetch() {
+		setLoading(true);
+		let res;
+		try {
+			res = await axios.get(`${process.env.REACT_APP_API}/categories/get`, {
+				timeout: 5000
+			});
+		} catch (_) {
+			setFailing(true);
 			setLoading(false);
+			return;
 		}
-		fetchData();
+		setCategories(res.data);
+		const savedSelection = localStorage.getItem('selectedCategory');
+		const selection = res.data.includes(savedSelection) ? savedSelection : res.data[0];
+		setSelected(selection);
+
+		res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selection}`);
+		const obj = {};
+		obj[selection] = res.data;
+		setFilter(f => ({...f, [selection]: []}));
+		setImages(obj);
+		setLoading(false);
+		setFailing(false);
+	}
+
+	// Startup effect
+	useEffect(() => {
+		initialFetch();
 	}, []);
 
 	// Selects a category, or creates it if it doesn't exist
@@ -196,104 +211,123 @@ function App() {
 			window.removeEventListener('keydown', handleUserKeyPress);
 		};
 	}, [handleUserKeyPress]);
+	if (isFailing) {
+		return (
+			<div className='App bg-gray-800 w-full h-full flex flex-col items-center justify-center'>
+				<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
+					<VscDebugDisconnect size={64} color='#aaaaaa'></VscDebugDisconnect>
+				</div>
+				<div className='text-white font-title text-4xl'>{isLoading ? 'Retrying to connect...' : 'Couldn\'t connect to the database.'}</div>
 
+				<button
+					disabled={isLoading}
+					onClick={() => !isLoading && initialFetch()}
+					className='border border-white text-white px-6 py-2 text-lg font-default rounded-sm hover:bg-white hover:bg-opacity-25 duration-100'>
+					{isLoading ?
+						<div className='loader w-6 h-6'></div>
+						:
+						'Retry'
+					}
+				</button>
+			</div>
+		);
+	}
 	if (isLoading) {
 		return (
 			<div className='App bg-gray-800 w-full h-full flex items-center justify-center'>
 				<div className='text-white font-title text-4xl'>Loading...</div>
 			</div>
 		);
-	} else {
-		return (
-			<div className='App bg-gray-800 w-full h-full flex flex-col'>
-				{viewing !== undefined && <ImageViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)} />}
-				{isAdding ?
-					<ImageAdder
-						categories={categories}
-						close={() => setIsAdding(false)}
-						addImportedImages={addImportedImages}
-						selected={selected}>
-					</ImageAdder> : ''}
-				{editing ?
-					<ImageAdder
-						categories={categories}
-						close={() => setEditing(undefined)}
-						editing={images[selected]?.find(img => img.id === editing)}
-						edit={editImage}
-						delete={deleteImage}
-						selected={selected}>
-					</ImageAdder>
-					: ''
-				}
-				{/* MenuBar */}
-				<div
-					className='w-full md:w-11/12 bg-gray-900 py-4 px-4 md:mx-auto md:m-2 flex flex-row items-center justify-end md:justify-between shadow-xl md:rounded-2xl'
-				>
-					<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
-					<div className='flex flex-row items-center'>
-						<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
-						<div
-							className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
-							style={{width: '45px', height: '45px'}}
-							onClick={() => setFilterUnion(!filterUnion)}
-							title={filterUnion ? 'Union' : 'Intersection'}
-						>
-							<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' />
-						</div>
-						<TiArrowShuffle
-							title='Shuffle images'
-							color='#ffffff'
-							size={45}
-							className='mx-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
-							onClick={shuffleImages}
-						>
-						</TiArrowShuffle>
-						<CategorySelect
-							categories={categories}
-							selected={selected}
-							select={select}
-							rename={renameCategory}
-							delete={del}></CategorySelect>
+	}
+	return (
+		<div className='App bg-gray-800 w-full h-full flex flex-col'>
+			{viewing !== undefined && <ImageViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)} />}
+			{isAdding ?
+				<ImageAdder
+					categories={categories}
+					close={() => setIsAdding(false)}
+					addImportedImages={addImportedImages}
+					selected={selected}>
+				</ImageAdder> : ''}
+			{editing ?
+				<ImageAdder
+					categories={categories}
+					close={() => setEditing(undefined)}
+					editing={images[selected]?.find(img => img.id === editing)}
+					edit={editImage}
+					delete={deleteImage}
+					selected={selected}>
+				</ImageAdder>
+				: ''
+			}
+			{/* MenuBar */}
+			<div
+				className='w-full md:w-11/12 bg-gray-900 py-4 px-4 md:mx-auto md:m-2 flex flex-row items-center justify-end md:justify-between shadow-xl md:rounded-2xl'
+			>
+				<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
+				<div className='flex flex-row items-center'>
+					<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
+					<div
+						className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
+						style={{width: '45px', height: '45px'}}
+						onClick={() => setFilterUnion(!filterUnion)}
+						title={filterUnion ? 'Union' : 'Intersection'}
+					>
+						<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' />
 					</div>
-				</div>
-				{total ?
-					(
-						<div className='relative overflow-y-auto'> {/* Image Gallery */}
-							<div
-								className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center md:justify-between flex-col sm:flex-row items-center sm:items-start'
-								style={{flexFlow: 'wrap'}}
-								ref={galleryRef}
-							>
-								{filtered.map((image, i) => (<ImageCard {...image} key={image.id} edit={() => setEditing(image.id)} onClick={() => setViewing(i)} ></ImageCard>))}
-							</div>
-							<div className='font-default text-gray-100 text-lg text-center my-4'> {/* Entries stats */}
-								<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},
-								<span className='font-bold'> {videosCount}</span> video{videosCount === 1 ? '' : 's'}
-								{
-									total !== images[selected].length ?
-										<div className='text-sm text-italic'> <span className='font-bold'>{images[selected].length}</span> total entries in <span className='font-bold'>{selected}</span></div>
-										: ''
-								}
-							</div>
-						</div>
-					)
-					:
-					<div className='flex justify-center items-center h-full flex-col'> {/* 'No Images' indicator */}
-						<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
-							<MdOutlineNoPhotography size={48} color='#aaaaaa'></MdOutlineNoPhotography>
-						</div>
-						<div className='text-gray-400 font-title text-4xl my-4'>No images</div>
-					</div>
-				}
-				<div
-					className='fixed bottom-0 right-0 m-5 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2 z-40'
-					onClick={() => setIsAdding(true)}
-				>
-					<MdAdd color='#ffffff' size={38}></MdAdd>
+					<TiArrowShuffle
+						title='Shuffle images'
+						color='#ffffff'
+						size={45}
+						className='mx-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
+						onClick={shuffleImages}
+					>
+					</TiArrowShuffle>
+					<CategorySelect
+						categories={categories}
+						selected={selected}
+						select={select}
+						rename={renameCategory}
+						delete={del}></CategorySelect>
 				</div>
 			</div>
-		);
-	}
-};
+			{total ?
+				(
+					<div className='relative overflow-y-auto'> {/* Image Gallery */}
+						<div
+							className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center md:justify-between flex-col sm:flex-row items-center sm:items-start'
+							style={{flexFlow: 'wrap'}}
+							ref={galleryRef}
+						>
+							{filtered.map((image, i) => (<ImageCard {...image} key={image.id} edit={() => setEditing(image.id)} onClick={() => setViewing(i)} ></ImageCard>))}
+						</div>
+						<div className='font-default text-gray-100 text-lg text-center my-4'> {/* Entries stats */}
+							<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},
+							<span className='font-bold'> {videosCount}</span> video{videosCount === 1 ? '' : 's'}
+							{
+								total !== images[selected].length ?
+									<div className='text-sm text-italic'> <span className='font-bold'>{images[selected].length}</span> total entries in <span className='font-bold'>{selected}</span></div>
+									: ''
+							}
+						</div>
+					</div>
+				)
+				:
+				<div className='flex justify-center items-center h-full flex-col'> {/* 'No Images' indicator */}
+					<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
+						<MdOutlineNoPhotography size={48} color='#aaaaaa'></MdOutlineNoPhotography>
+					</div>
+					<div className='text-gray-400 font-title text-4xl my-4'>No images</div>
+				</div>
+			}
+			<div
+				className='fixed bottom-0 right-0 m-5 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2 z-40'
+				onClick={() => setIsAdding(true)}
+			>
+				<MdAdd color='#ffffff' size={38}></MdAdd>
+			</div>
+		</div>
+	);
+}
 
 export default App;
