@@ -39,7 +39,7 @@ export default function ImageCard(props) {
 	return (
 		<div
 			id={props.id}
-			className='image-card cursor-pointer relative m-1 flex items-center justify-center rounded-md bg-gray-700 overflow-hidden'
+			className='image-card cursor-pointer relative m-1 flex items-center justify-center rounded-md bg-gray-700 overflow-hidden [width:300px] [height:300px]'
 			title={props.tags.join(', ')}
 			onClick={props.onClick}
 			ref={containerRef}

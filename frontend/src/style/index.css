@@ -13,21 +13,12 @@ body {
 
 .image-card {
 	animation: imageCardBackground 1.5s ease infinite;
-	width: 300px;
-	height: 300px;
 }
 
 .image-card:hover>.image-card-tags,
 .image-card:hover>.image-card-actions {
 	opacity: 1;
 }
-
-@media (min-width: 768px) {
-	.images-grid .image-card:last-child {
-		margin-right: auto;
-	}
-}
-
 
 .loader {
 	border: 3px solid #fff;
