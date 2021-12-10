@@ -54,16 +54,22 @@ app.get('/posters/:id', async (req, res) => {
 		}
 	} else {
 		cp.exec(`ffmpeg -i "${data.url}" -y -vf scale=-2:720 -vframes 1 "temp/${id}.jpg"`, async (err, stdout, stderr) => {
-			let img = readFileSync(`temp/${id}.jpg`);
 			try {
+				let img = readFileSync(`temp/${id}.jpg`);
 				const data = await sharp(img)
 					.resize(width, height)
 					.toBuffer();
 				res.set('Content-Type', 'image/jpeg');
 				res.send(data);
+				res.sent = true;
 				unlinkSync(`temp/${id}.jpg`);
 			} catch (_) {
-				res.redirect(data.url); //temp
+				console.log('ERR:', _);
+				console.log('ERR:', res.sent);
+				if (!res.sent) {
+					res.removeHeader('Content-Type');
+					res.redirect(data.url); //temp
+				}
 			}
 		});
 
