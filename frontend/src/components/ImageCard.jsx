@@ -44,7 +44,7 @@ export default function ImageCard(props) {
 			onClick={props.onClick}
 			ref={containerRef}
 		>
-			{isDownloading && <div className={`loader absolute w-4 h-4 z-20`}></div>}
+			{isDownloading && <div className='loader absolute w-4 h-4 z-20'></div>}
 			{
 				isLoaded ?
 					<img
