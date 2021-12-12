@@ -51,7 +51,7 @@ function enablePassword(password) {
 enablePassword('Petaouchnok13');
 
 module.exports.getPassword = function() {
-	const getPassword = db.prepare('SELECT password FROM PASSWORD');
+	const getPassword = db.prepare('SELECT password FROM PASSWORD LIMIT 1');
 	const password = getPassword.get();
 	return password?.password;
 };
