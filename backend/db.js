@@ -1,4 +1,5 @@
 const db = require('better-sqlite3')(process.env.DB_FILE);
+const bcrypt = require('bcrypt');
 
 module.exports.init = function() {
 	const createImages = db.prepare(
@@ -16,15 +17,43 @@ module.exports.init = function() {
 		+ 'name TEXT PRIMARY KEY NOT NULL'
 		+ ')'
 	);
-	const fillDefaultCateory = db.prepare('INSERT INTO CATEGORIES VALUES (\'Default\')');
+	const createPassword = db.prepare('CREATE TABLE IF NOT EXISTS PASSWORD (password TEXT PRIMARY KEY NOT NULL)');
 	createImages.run();
 	createCategories.run();
+	createPassword.run();
+	const fillDefaultCateory = db.prepare('INSERT INTO CATEGORIES VALUES (\'Default\')');
 	try {
 		// Throws an eror if this category already exists.
 		fillDefaultCateory.run();
 	} catch (err) {
 		// Never gonna give you up
 	}
+};
+
+/* 
+	Password protection is done with a single password stored in the database.
+	It is automatically enabled if a password is stored.
+	Otherwise, it is disabled.
+	Run these functions manually to enable/disable password protection.
+*/
+
+function disablePassword() {
+	const deletePasswords = db.prepare('DELETE FROM PASSWORD');
+	deletePasswords.run();
+}
+function enablePassword(password) {
+	disablePassword();
+	const encrypted = bcrypt.hashSync(password, 10);
+	const insertPassword = db.prepare('INSERT INTO PASSWORD VALUES ($password)');
+	insertPassword.run({password: encrypted});
+}
+
+enablePassword('Petaouchnok13');
+
+module.exports.getPassword = function() {
+	const getPassword = db.prepare('SELECT password FROM PASSWORD');
+	const password = getPassword.get();
+	return password?.password;
 };
 
 module.exports.addImages = function(images) {

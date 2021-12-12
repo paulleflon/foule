@@ -13,6 +13,15 @@ app.use(cors({
 }));
 app.use(express.json());
 
+
+const password = db.getPassword();
+
+if (password) {
+	app.use(require('./auth')(password));
+	console.log('Auth enabled.');
+}
+
+
 app.get('/download/:id', async (req, res) => {
 	const {id} = req.params;
 	const {url, type} = await db.getImage(id);
