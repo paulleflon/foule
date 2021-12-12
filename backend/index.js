@@ -16,6 +16,12 @@ app.use(express.json());
 
 const password = db.getPassword();
 
+
+app.get('/password', (req, res) => {
+	res.send(password !== undefined);
+});
+
+
 if (password) {
 	app.use(require('./auth')(password));
 	console.log('Auth enabled.');
