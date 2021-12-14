@@ -1,15 +1,15 @@
 import axios from 'axios';
-import React, {useEffect, useState, useCallback, createRef} from 'react';
-import {MdOutlineNoPhotography, MdAdd} from 'react-icons/md';
+import React, {createRef, useCallback, useEffect, useState} from 'react';
+import {MdAdd, MdOutlineNoPhotography} from 'react-icons/md';
+import {TiArrowShuffle} from 'react-icons/ti';
 import {VscDebugDisconnect} from 'react-icons/vsc';
 import JoinFull from './assets/join_full.png';
 import JoinInner from './assets/join_inner.png';
-import {TiArrowShuffle} from 'react-icons/ti';
 import CategorySelect from './components/CategorySelect';
 import ImageAdder from './components/ImageAdder';
 import ImageCard from './components/ImageCard';
-import TagsEditor from './components/TagsEditor';
 import ImageViewer from './components/ImageViewer';
+import TagsEditor from './components/TagsEditor';
 
 function App() {
 	// Array of all categories
@@ -20,6 +20,8 @@ function App() {
 	const [isLoading, setLoading] = useState(true);
 	// Whether loading failed
 	const [isFailing, setFailing] = useState(false);
+	// Whether the app is asking for password
+	const [isLogging, setLogging] = useState(false);
 	// Object of all image arrays, keyed by category
 	const [images, setImages] = useState({});
 	// Whether the user is currently adding an image
@@ -52,6 +54,12 @@ function App() {
 		imagesCount = filtered?.filter(img => img.type === 'image').length;
 		videosCount = filtered?.filter(img => img.type === 'video').length;
 	}
+
+	// async function requiresPassword() {
+	// 	setLogging(true);
+	// 	const response = await axios.get('/password');
+	// 	setLogging(response.data);
+	// }
 
 	// Loads categories, selects a category (from localStorage or the first one) and loads images from it.
 	async function initialFetch() {
