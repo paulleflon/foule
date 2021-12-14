@@ -48,8 +48,6 @@ function enablePassword(password) {
 	insertPassword.run({password: encrypted});
 }
 
-enablePassword('Petaouchnok13');
-
 module.exports.getPassword = function() {
 	const getPassword = db.prepare('SELECT password FROM PASSWORD LIMIT 1');
 	const password = getPassword.get();
