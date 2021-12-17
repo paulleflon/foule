@@ -20,8 +20,8 @@ function App() {
 	const [isLoading, setLoading] = useState(true);
 	// Whether loading failed
 	const [isFailing, setFailing] = useState(false);
-	// Whether the app is asking for password
-	const [isLogging, setLogging] = useState(false);
+	// Whether the user is typing
+	const [isTyping, setIsTyping] = useState(false);
 	// Object of all image arrays, keyed by category
 	const [images, setImages] = useState({});
 	// Whether the user is currently adding an image
@@ -167,10 +167,10 @@ function App() {
 				if (viewing !== undefined) nextImage();
 				break;
 			case 's':
-				shuffleImages();
+				if (!isTyping && !isAdding && !editing && viewing === undefined) shuffleImages();
 				break;
 			case 'a':
-				setIsAdding(true);
+				if (!isTyping && !isAdding && !editing && viewing === undefined) setIsAdding(true);
 				break;
 			case 'Escape':
 				setViewing(undefined);
@@ -287,7 +287,7 @@ function App() {
 			>
 				<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 				<div className='flex flex-row items-center'>
-					<TagsEditor tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
+					<TagsEditor setIsTyping={setIsTyping} tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
 					<div
 						className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
 						style={{width: '45px', height: '45px'}}
@@ -309,6 +309,7 @@ function App() {
 						selected={selected}
 						select={select}
 						rename={renameCategory}
+						setIsTyping={setIsTyping}
 						delete={del}></CategorySelect>
 				</div>
 			</div>

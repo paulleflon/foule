@@ -39,7 +39,7 @@ export default class CategorySelect extends React.Component {
 		if (this.state.filter === this.props.selected)
 			return <div className='py-1 px-2 text-s hover:bg-white font-default italic w-full'>Already browsing <span className='font-bold'>{this.state.filter}</span></div>;
 		const filtered = this.props.categories.filter(c => c.toLowerCase().includes(this.state.filter.toLowerCase()) && c !== this.props.selected);
-		const mapped = filtered.map(c => <Category key={c} name={c} select={this.select.bind(this)} delete={this.delete.bind(this)} rename={this.props.rename.bind(this)}></Category>);
+		const mapped = filtered.map(c => <Category key={c} name={c} setIsTyping={this.props.setIsTyping} select={this.select.bind(this)} delete={this.delete.bind(this)} rename={this.props.rename.bind(this)}></Category>);
 		return mapped.length ? mapped : <Category name={this.state.filter} create={true} select={this.select.bind(this)}></Category>;
 	}
 
@@ -59,7 +59,8 @@ export default class CategorySelect extends React.Component {
 					className={`${!this.state.focused ? 'h-0' : ''} transition-all overflow-hidden absolute right-0 w-3/4 md:w-full bg-white my-2 mx-2 md:m-0 rounded-b rounded-t md:rounded-t-none`}>
 					<div className='p-2'>
 						<input
-							onBlur={e => {e.stopPropagation(); this.whole.current.focus();}}
+							onBlur={e => {e.stopPropagation(); this.whole.current.focus(); this.props.setIsTyping(false);}}
+							onFocus={() => this.props.setIsTyping(true)}
 							className='px-2 outline-none border-2 rounded-md w-full m-auto focus:border-blue-400 text-lg transition-all duration-100'
 							type='text'
 							ref={this.input}
@@ -94,7 +95,8 @@ function Category(props) {
 						type='text'
 						defaultValue={props.name}
 						onKeyDown={onDown}
-						onBlur={() => setRenaming(false)}
+						onFocus={() => props.setIsTyping(true)}
+						onBlur={() => {setRenaming(false); props.setIsTyping(false);}}
 						autoFocus />
 					:
 					props.name.length ?

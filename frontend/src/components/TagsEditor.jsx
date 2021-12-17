@@ -1,7 +1,7 @@
 import {useRef} from 'react';
 import {MdClose} from 'react-icons/md';
 
-function TagsEditor({tags, updateTags, inMenu}) {
+function TagsEditor({tags, updateTags, inMenu, setIsTyping}) {
 	const inputRef = useRef(null);
 	const onDown = (e) => {
 		if (!inputRef.current.value.trim() && e.code === 'Backspace') {
@@ -36,7 +36,7 @@ function TagsEditor({tags, updateTags, inMenu}) {
 					)}
 
 			</div>
-			<input type='text' placeholder={inMenu ? 'Filter...' : 'Tag'}
+			<input type='text' onFocus={() => setIsTyping(true)} onBlur={() => setIsTyping(false)} placeholder={inMenu ? 'Filter...' : 'Tag'}
 				className='font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48' onKeyDown={onDown} ref={inputRef} />
 		</div>
 	);
