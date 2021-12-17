@@ -129,6 +129,7 @@ module.exports.deleteCategory = function(name) {
 	if (!module.exports.getCategories().includes(name))
 		return false;
 	db.prepare('DELETE FROM CATEGORIES WHERE name=$name').run({name});
+	db.prepare('DELETE FROM IMAGES WHERE category=$name').run({name});
 	console.log(`Deleted category ${name} from the database.`);
 };
 
