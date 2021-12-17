@@ -159,14 +159,27 @@ function App() {
 	// Event handler for keypresses
 	// Handles shuffling images and viewing previous/next images
 	const handleUserKeyPress = useCallback(e => {
-		if (e.key === 's')
-			shuffleImages();
-		if (e.key === 'ArrowRight' && viewing !== undefined)
-			nextImage();
-		if (e.key === 'ArrowLeft' && viewing !== undefined)
-			previousImage();
-		if (e.key === 'Escape')
-			setViewing(undefined);
+		switch (e.key) {
+			case 'ArrowLeft':
+				if (viewing !== undefined) previousImage();
+				break;
+			case 'ArrowRight':
+				if (viewing !== undefined) nextImage();
+				break;
+			case 's':
+				shuffleImages();
+				break;
+			case 'a':
+				setIsAdding(true);
+				break;
+			case 'Escape':
+				setViewing(undefined);
+				setIsAdding(false);
+				setEditing(false);
+				break;
+			default:
+				break;
+		}
 	}, [shuffleImages, previousImage, nextImage, viewing]);
 
 	// Renames a category and update the images object.
