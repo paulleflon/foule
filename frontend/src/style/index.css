@@ -5,10 +5,15 @@
 
 html, body, #root {
 	height: 100%;
+	background: rgb(31 41 55);
 }
 
 body {
 	margin: 0;
+}
+
+input {
+	@apply rounded focus:outline-none focus:ring-4 focus:ring-white/30;
 }
 
 .image-card {

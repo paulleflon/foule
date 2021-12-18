@@ -93,7 +93,7 @@ class ImageAdder extends React.Component {
 
 	render() {
 		return (
-			<div className='z-50 image-adder-container fixed w-full h-full flex justify-center items-center bg-black bg-opacity-50'>
+			<div className='z-50 image-adder-container fixed w-full h-full flex justify-center items-center bg-black/90 backdrop-blur-lg bg-opacity-50'>
 				<div className='relative image-adder shadow-xl bg-gray-800 md:w-1/2 h-5/6 md:h-2/3 w-5/6 rounded-lg p-4 pb-20 md:pb-4 overflow-hidden'>
 					<MdClose
 						className='absolute top-0 right-0 m-2 rounded-full cursor-pointer hover:bg-white hover:bg-opacity-25 p-2 transition-all duration-100'
@@ -114,9 +114,9 @@ class ImageAdder extends React.Component {
 									)}
 							</div>
 							<div className='input-group flex'>
-								<input type='text' placeholder='Image/Video URL' className='font-default text-xl border-none h-8 px-2 w-1/2 rounded-none' ref={this.inputs.src} />
+								<input type='text' placeholder='Image/Video URL' className='font-default text-xl border-none h-8 px-2 w-1/2 rounded-l-sm rounded-r-none' ref={this.inputs.src} />
 								<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'image')}>Add</button>
-								<button className='bg-white h-8 border-l px-2 border-black' onClick={this.addImage.bind(this, 'video')}>Add Video</button>
+								<button className='bg-white h-8 border-l px-2 border-black rounded-r-sm' onClick={this.addImage.bind(this, 'video')}>Add Video</button>
 							</div>
 						</div>
 					}

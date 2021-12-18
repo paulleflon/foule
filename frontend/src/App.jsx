@@ -234,7 +234,7 @@ function App() {
 	}, [handleUserKeyPress]);
 	if (isFailing) {
 		return (
-			<div className='App bg-gray-800 w-full h-full flex flex-col items-center justify-center'>
+			<div className='App w-full h-full flex flex-col items-center justify-center'>
 				<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
 					<VscDebugDisconnect size={64} color='#aaaaaa'></VscDebugDisconnect>
 				</div>
@@ -283,7 +283,7 @@ function App() {
 			}
 			{/* MenuBar */}
 			<div
-				className='w-full md:w-11/12 bg-gray-900 py-4 px-4 md:mx-auto md:m-2 flex flex-row items-center justify-end md:justify-between shadow-xl md:rounded-2xl'
+				className='fixed w-full md:w-11/12 bg-gray-900/90 backdrop-blur-lg py-4 px-4 md:left-[4.5%] md:my-2 flex flex-row items-center justify-end md:justify-between shadow-xl md:rounded-2xl z-40'
 			>
 				<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
 				<div className='flex flex-row items-center'>
@@ -315,7 +315,7 @@ function App() {
 			</div>
 			{total ?
 				(
-					<div className='relative overflow-y-auto'> {/* Image Gallery */}
+					<div className='relative pt-20'> {/* Image Gallery */}
 						<div
 							className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center flex-col sm:flex-row items-center sm:items-start'
 							style={{flexFlow: 'wrap'}}
