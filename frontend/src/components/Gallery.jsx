@@ -3,6 +3,7 @@ import ImageCard from './ImageCard';
 
 
 function Gallery({
+	className,
 	entries,
 	entriesCount,
 	filtered,
@@ -25,7 +26,7 @@ function Gallery({
 		videosCount
 	});
 	return (
-		<div className='relative pt-20'>
+		<div className={`${className} relative pt-20`}>
 			<div
 				className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center flex-col sm:flex-row items-center sm:items-start'
 				style={{flexFlow: 'wrap'}}
@@ -37,8 +38,8 @@ function Gallery({
 				<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},
 				<span className='font-bold'> {videosCount}</span> video{videosCount === 1 ? '' : 's'}
 				{
-					
-					
+
+
 					entriesCount !== entries[selectedCategory].length ?
 						<div className='text-sm text-italic'> <span className='font-bold'>{entries[selectedCategory].length}</span> total entries in <span className='font-bold'>{selectedCategory}</span></div>
 						: ''

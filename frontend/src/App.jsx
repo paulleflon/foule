@@ -294,6 +294,7 @@ function App() {
 			{entriesCount ?
 				(
 					<Gallery
+						className={(isAdding || isEditing || viewing !== undefined) ? 'overflow-hidden' : ''}
 						entries={entries}
 						entriesCount={entriesCount}
 						filtered={filtered}
