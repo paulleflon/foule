@@ -1,33 +1,29 @@
 import axios from 'axios';
 import React, {createRef, useCallback, useEffect, useState} from 'react';
 import {MdAdd, MdOutlineNoPhotography} from 'react-icons/md';
-import {TiArrowShuffle} from 'react-icons/ti';
 import {VscDebugDisconnect} from 'react-icons/vsc';
-import JoinFull from './assets/join_full.png';
-import JoinInner from './assets/join_inner.png';
-import CategorySelect from './components/CategorySelect';
-import ImageAdder from './components/ImageAdder';
-import ImageCard from './components/ImageCard';
-import ImageViewer from './components/ImageViewer';
-import TagsEditor from './components/TagsEditor';
+import Gallery from './components/Gallery';
+import EntryEditor from './components/EntryEditor';
+import MediaViewer from './components/MediaViewer';
+import MenuBar from './components/MenuBar';
 
 function App() {
 	// Array of all categories
 	const [categories, setCategories] = useState();
 	// Currently selected category
-	const [selected, setSelected] = useState();
+	const [selectedCategory, setSelectedCategory] = useState();
 	// Whether the app is loading
-	const [isLoading, setLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(true);
 	// Whether loading failed
-	const [isFailing, setFailing] = useState(false);
+	const [isFailing, setIsFailing] = useState(false);
 	// Whether the user is typing
 	const [isTyping, setIsTyping] = useState(false);
 	// Object of all image arrays, keyed by category
-	const [images, setImages] = useState({});
+	const [entries, setImages] = useState({});
 	// Whether the user is currently adding an image
 	const [isAdding, setIsAdding] = useState(false);
 	// Whether the user is currently editing an image
-	const [editing, setEditing] = useState(undefined);
+	const [isEditing, setIsEditing] = useState(undefined);
 	// The tags to filter in the gallery
 	const [filter, setFilter] = useState({});
 	// Whether the filter tags have to be applied by union or intersection (false is intersection)
@@ -37,20 +33,20 @@ function App() {
 	// Ref to the image gallery container
 	const galleryRef = createRef();
 	let filtered, // Filtered images array
-		total, // Total number of displayed entries (image and video)
+		entriesCount, // Total number of displayed entries (image and video)
 		imagesCount, // Number of images in the selected category
 		videosCount; // Number of videos in the selected category
 	if (!isLoading) { // These are only used if the app is loaded
-		filtered = images[selected]?.filter(img => {
-			if (filter[selected].length === 0) return true;
+		filtered = entries[selectedCategory]?.filter(img => {
+			if (filter[selectedCategory].length === 0) return true;
 			const imgTags = img.tags.map(t => t.toLowerCase());
 			if (filterUnion) {
-				return filter[selected].some(f => imgTags.includes(f.toLowerCase()));
+				return filter[selectedCategory].some(f => imgTags.includes(f.toLowerCase()));
 			} else {
-				return filter[selected].every(f => imgTags.includes(f.toLowerCase()));
+				return filter[selectedCategory].every(f => imgTags.includes(f.toLowerCase()));
 			}
 		});
-		total = filtered?.length || 0;
+		entriesCount = filtered?.length || 0;
 		imagesCount = filtered?.filter(img => img.type === 'image').length;
 		videosCount = filtered?.filter(img => img.type === 'video').length;
 	}
@@ -63,29 +59,29 @@ function App() {
 
 	// Loads categories, selects a category (from localStorage or the first one) and loads images from it.
 	async function initialFetch() {
-		setLoading(true);
+		setIsLoading(true);
 		let res;
 		try {
 			res = await axios.get(`${process.env.REACT_APP_API}/categories/get`, {
 				timeout: 5000
 			});
 		} catch (_) {
-			setFailing(true);
-			setLoading(false);
+			setIsFailing(true);
+			setIsLoading(false);
 			return;
 		}
 		setCategories(res.data);
 		const savedSelection = localStorage.getItem('selectedCategory');
 		const selection = res.data.includes(savedSelection) ? savedSelection : res.data[0];
-		setSelected(selection);
+		setSelectedCategory(selection);
 
 		res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selection}`);
 		const obj = {};
 		obj[selection] = res.data;
 		setFilter(f => ({...f, [selection]: []}));
 		setImages(obj);
-		setLoading(false);
-		setFailing(false);
+		setIsLoading(false);
+		setIsFailing(false);
 	}
 
 	// Startup effect
@@ -94,32 +90,32 @@ function App() {
 	}, []);
 
 	// Selects a category, or creates it if it doesn't exist
-	const select = async (name) => {
+	const selectCategory = async (name) => {
 		if (!categories.includes(name)) {
 			await axios.post(`${process.env.REACT_APP_API}/categories/add`, {name});
 			setCategories([...categories, name]);
 		}
 		const res = await axios.get(`${process.env.REACT_APP_API}/images/get/${name}`);
-		const obj = images;
+		const obj = entries;
 		obj[name] = res.data;
 		setImages(obj);
 		if (!filter[name]) {
 			filter[name] = [];
 			setFilter(filter);
 		}
-		setSelected(name);
+		setSelectedCategory(name);
 		localStorage.setItem('selectedCategory', name);
 	};
 
 	// Deletes a category
-	const del = async (name) => {
+	const deleteCategory = async (name) => {
 		await axios.post(`${process.env.REACT_APP_API}/categories/delete`, {name});
 		setCategories(categories.filter(c => c !== name));
 	};
 
 	// Adds to the app's state images that have been sent to the server
 	const addImportedImages = (added, category) => {
-		const obj = {...images};
+		const obj = {...entries};
 		obj[category] = [...(obj[category] || []), ...added];
 		setImages(obj);
 		setIsAdding(false);
@@ -131,30 +127,30 @@ function App() {
 		if (!gallery) return;
 		gallery.style.opacity = 0;
 		setTimeout(() => {
-			const obj = {...images};
-			obj[selected] = obj[selected].sort(() => Math.random() - 0.5);
+			const obj = {...entries};
+			obj[selectedCategory] = obj[selectedCategory].sort(() => Math.random() - 0.5);
 			setImages(obj);
 			gallery.style.opacity = 1;
 		}, 250);
-	}, [galleryRef, images, selected]);
+	}, [galleryRef, entries, selectedCategory]);
 
 	// Views the previous entry.
 	const previousImage = useCallback(() => {
 		const i = viewing;
 		if (i - 1 < 0)
-			setViewing(total - 1);
+			setViewing(entriesCount - 1);
 		else
 			setViewing(i - 1);
-	}, [viewing, total]);
+	}, [viewing, entriesCount]);
 
 	// Views the next entry.
 	const nextImage = useCallback(() => {
 		const i = viewing;
-		if (i + 1 >= total)
+		if (i + 1 >= entriesCount)
 			setViewing(0);
 		else
 			setViewing(i + 1);
-	}, [viewing, total]);
+	}, [viewing, entriesCount]);
 
 	// Event handler for keypresses
 	// Handles shuffling images and viewing previous/next images
@@ -167,15 +163,15 @@ function App() {
 				if (viewing !== undefined) nextImage();
 				break;
 			case 's':
-				if (!isTyping && !isAdding && !editing && viewing === undefined) shuffleImages();
+				if (!isTyping && !isAdding && !isEditing && viewing === undefined) shuffleImages();
 				break;
 			case 'a':
-				if (!isTyping && !isAdding && !editing && viewing === undefined) setIsAdding(true);
+				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setIsAdding(true);
 				break;
 			case 'Escape':
 				setViewing(undefined);
 				setIsAdding(false);
-				setEditing(false);
+				setIsEditing(false);
 				break;
 			default:
 				break;
@@ -186,7 +182,7 @@ function App() {
 	const renameCategory = async (oldName, newName) => {
 		await axios.post(`${process.env.REACT_APP_API}/categories/rename`, {oldName, newName});
 		setCategories(categories.map(c => c === oldName ? newName : c));
-		const obj = {...images};
+		const obj = {...entries};
 		if (obj[oldName]) {
 			obj[oldName] = obj[oldName].map(i => ({...i, category: newName}));
 			obj[newName] = obj[oldName];
@@ -197,31 +193,31 @@ function App() {
 
 	// Edits an entry, both in the images object and in the server
 	const editImage = async (tags, category) => {
-		const obj = {...images};
-		obj[selected] = obj[selected].map(i => i.id === editing ? {...i, tags} : i);
+		const obj = {...entries};
+		obj[selectedCategory] = obj[selectedCategory].map(i => i.id === isEditing ? {...i, tags} : i);
 		if (category) {
-			const entry = obj[selected].find(i => i.id === editing);
-			obj[selected] = obj[selected].filter(i => i.id !== editing);
+			const entry = obj[selectedCategory].find(i => i.id === isEditing);
+			obj[selectedCategory] = obj[selectedCategory].filter(i => i.id !== isEditing);
 			obj[category] = [...(obj[category] || []), entry];
 		}
-		await axios.post(`${process.env.REACT_APP_API}/images/edit/${editing}`, {tags, category: category || selected});
+		await axios.post(`${process.env.REACT_APP_API}/images/edit/${isEditing}`, {tags, category: category || selectedCategory});
 		setImages(obj);
-		setEditing(undefined);
+		setIsEditing(undefined);
 	};
 
 	// Deletes an entry, both in the images object and in the server
 	const deleteImage = async () => {
-		const obj = {...images};
-		obj[selected] = obj[selected].filter(i => i.id !== editing);
-		await axios.post(`${process.env.REACT_APP_API}/images/delete/${editing}`);
+		const obj = {...entries};
+		obj[selectedCategory] = obj[selectedCategory].filter(i => i.id !== isEditing);
+		await axios.post(`${process.env.REACT_APP_API}/images/delete/${isEditing}`);
 		setImages(obj);
-		setEditing(undefined);
+		setIsEditing(undefined);
 	};
 
 	// Updates the filter tags
 	const updateFilter = (tags) => {
 		const obj = {...filter};
-		obj[selected] = tags;
+		obj[selectedCategory] = tags;
 		setFilter(obj);
 	};
 
@@ -262,77 +258,52 @@ function App() {
 	}
 	return (
 		<div className='App bg-gray-800 w-full h-full flex flex-col'>
-			{viewing !== undefined && <ImageViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)} />}
+			{viewing !== undefined && <MediaViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)} />}
 			{isAdding ?
-				<ImageAdder
+				<EntryEditor
 					categories={categories}
 					close={() => setIsAdding(false)}
 					addImportedImages={addImportedImages}
-					selected={selected}>
-				</ImageAdder> : ''}
-			{editing ?
-				<ImageAdder
+					selected={selectedCategory}>
+				</EntryEditor> : ''}
+			{isEditing ?
+				<EntryEditor
 					categories={categories}
-					close={() => setEditing(undefined)}
-					editing={images[selected]?.find(img => img.id === editing)}
+					close={() => setIsEditing(undefined)}
+					editing={entries[selectedCategory]?.find(img => img.id === isEditing)}
 					edit={editImage}
 					delete={deleteImage}
-					selected={selected}>
-				</ImageAdder>
+					selected={selectedCategory}>
+				</EntryEditor>
 				: ''
 			}
 			{/* MenuBar */}
-			<div
-				className='fixed w-full md:w-11/12 bg-gray-900/90 backdrop-blur-lg py-4 px-4 md:left-[4.5%] md:my-2 flex flex-row items-center justify-end md:justify-between shadow-xl md:rounded-2xl z-40'
-			>
-				<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
-				<div className='flex flex-row items-center'>
-					<TagsEditor setIsTyping={setIsTyping} tags={filter[selected]} updateTags={updateFilter} inMenu={true}></TagsEditor>
-					<div
-						className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
-						style={{width: '45px', height: '45px'}}
-						onClick={() => setFilterUnion(!filterUnion)}
-						title={filterUnion ? 'Union' : 'Intersection'}
-					>
-						<img src={filterUnion ? JoinFull : JoinInner} alt='' className='w-full h-full' />
-					</div>
-					<TiArrowShuffle
-						title='Shuffle images'
-						color='#ffffff'
-						size={45}
-						className='mx-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
-						onClick={shuffleImages}
-					>
-					</TiArrowShuffle>
-					<CategorySelect
-						categories={categories}
-						selected={selected}
-						select={select}
-						rename={renameCategory}
-						setIsTyping={setIsTyping}
-						delete={del}></CategorySelect>
-				</div>
-			</div>
-			{total ?
+			<MenuBar
+				categories={categories}
+				deleteCategory={deleteCategory}
+				filter={filter}
+				filterUnion={filterUnion}
+				renameCategory={renameCategory}
+				selectCategory={selectCategory}
+				selectedCategory={selectedCategory}
+				setFilterUnion={setFilterUnion}
+				setIsTyping={setIsTyping}
+				shuffleImages={shuffleImages}
+				updateFilter={updateFilter}
+			/>
+			{entriesCount ?
 				(
-					<div className='relative pt-20'> {/* Image Gallery */}
-						<div
-							className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center flex-col sm:flex-row items-center sm:items-start'
-							style={{flexFlow: 'wrap'}}
-							ref={galleryRef}
-						>
-							{filtered.map((image, i) => (<ImageCard {...image} key={image.id} edit={() => setEditing(image.id)} onClick={() => setViewing(i)} ></ImageCard>))}
-						</div>
-						<div className='font-default text-gray-100 text-lg text-center my-4'> {/* Entries stats */}
-							<span className='font-bold'>{imagesCount}</span> image{imagesCount === 1 ? '' : 's'},
-							<span className='font-bold'> {videosCount}</span> video{videosCount === 1 ? '' : 's'}
-							{
-								total !== images[selected].length ?
-									<div className='text-sm text-italic'> <span className='font-bold'>{images[selected].length}</span> total entries in <span className='font-bold'>{selected}</span></div>
-									: ''
-							}
-						</div>
-					</div>
+					<Gallery
+						entries={entries}
+						entriesCount={entriesCount}
+						filtered={filtered}
+						galleryRef={galleryRef}
+						imagesCount={imagesCount}
+						selectedCategory={selectedCategory}
+						setIsEditing={setIsEditing}
+						setViewing={setViewing}
+						videosCount={videosCount}
+					/>
 				)
 				:
 				<div className='flex justify-center items-center h-full flex-col'> {/* 'No Images' indicator */}

@@ -3,8 +3,7 @@ import {MdChevronLeft, MdChevronRight, MdClose} from 'react-icons/md';
 let touchStartX = 0;
 let touchEndX = 0;
 
-
-function ImageViewer(props) {
+function MediaViewer(props) {
 	const handleTouchStart = (e) => {
 		touchStartX = e.changedTouches[0].screenX;
 	};
@@ -44,4 +43,4 @@ function ImageViewer(props) {
 		</div>
 	);
 }
-export default ImageViewer;
+export default MediaViewer;
