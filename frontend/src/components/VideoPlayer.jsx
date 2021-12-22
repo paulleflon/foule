@@ -112,7 +112,7 @@ function VideoPlayer(props) {
 
 	const keyboardControl = useCallback(e => {
 		const vid = videoRef.current;
-		switch (e.key) {
+		switch (e.key.toLowerCase()) {
 			case 'j':
 				vid.currentTime = Math.max(0, vid.currentTime - (e.shiftKey ? 0.05 : 5));
 				break;
