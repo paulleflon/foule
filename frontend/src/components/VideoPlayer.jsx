@@ -4,6 +4,7 @@ import {MdFullscreen, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp} from 'react
 function VideoPlayer(props) {
 	const [isPlaying, setIsPlaying] = useState(true);
 	const [isMuted, setIsMuted] = useState(true);
+	const [controlsOutTimeout, setControlsOutTimeout] = useState(null);
 	const containerRef = useRef();
 	const videoContainerRef = useRef();
 	const videoRef = useRef();
@@ -16,6 +17,7 @@ function VideoPlayer(props) {
 		className: 'cursor-pointer',
 		size: 24
 	};
+
 
 	let xDown = null;
 	let yDown = null;
@@ -72,13 +74,18 @@ function VideoPlayer(props) {
 	const videoMouseMove = () => {
 		controlsRef.current.style.opacity = 1;
 		videoRef.current.style.cursor = 'default';
-		setTimeout(() => {
+		clearTimeout(controlsOutTimeout);
+		setControlsOutTimeout(setTimeout(() => {
 			videoRef.current.style.cursor = 'none';
 			controlsRef.current.style.opacity = 0;
-		}, 5000);
+		}, 5000));
 	};
 
-	const videoMouseLeave = () => controlsRef.current.style.opacity = 0;
+	const videoMouseLeave = () => {
+		controlsRef.current.style.opacity = 0;
+		clearTimeout(controlsOutTimeout);
+		setControlsOutTimeout(null);
+	};
 	const progressMouseEnter = () => progressBallRef.current.style.opacity = 1;
 	const progressMouseLeave = () => progressBallRef.current.style.opacity = 0;
 
