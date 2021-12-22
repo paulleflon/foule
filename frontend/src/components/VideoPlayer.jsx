@@ -106,10 +106,10 @@ function VideoPlayer(props) {
 	const keyboardControl = useCallback(e => {
 		const vid = videoRef.current;
 		switch (e.key) {
-			case 'ArrowLeft':
+			case 'j':
 				vid.currentTime = Math.max(0, vid.currentTime - (e.shiftKey ? 0.05 : 5));
 				break;
-			case 'ArrowRight':
+			case 'l':
 				vid.currentTime = Math.min(vid.duration, vid.currentTime + (e.shiftKey ? 0.05 : 5));
 				break;
 			case ' ':
