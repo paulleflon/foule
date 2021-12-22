@@ -89,10 +89,18 @@ function VideoPlayer(props) {
 
 	function toggleFullScreen() {
 		const vid = videoRef.current;
-		if (!document.fullscreenElement)
-			vid.requestFullscreen();
-		else if (document.exitFullscreen)
-			document.exitFullscreen();
+		if (!document.fullscreenElement) {
+			if (vid.requestFullscreen)
+				vid.requestFullscreen();
+			else if (vid.webkitEnterFullscreen)
+				vid.webkitEnterFullscreen();
+		}
+		else {
+			if (document.exitFullscreen)
+				document.exitFullscreen();
+			else if (vid.webkitExitFullscreen)
+				vid.webkitExitFullscreen();
+		}
 	}
 
 	const keyboardControl = useCallback(e => {
@@ -156,6 +164,8 @@ function VideoPlayer(props) {
 					onTimeUpdate={onTimeUpdate}
 					onTouchStart={handleTouchStart}
 					onTouchMove={handleTouchMove}
+					onPause={() => setIsPlaying(false)}
+					onPlay={() => setIsPlaying(true)}
 				>
 				</video>
 				<div
