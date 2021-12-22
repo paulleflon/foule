@@ -190,12 +190,12 @@ function VideoPlayer(props) {
 						className='relative h-full w-[80%] flex items-center'
 					>
 						<div
-							className='relative w-full h-1 bg-white/80 rounded-full cursor-pointer'
+							className='relative w-full h-1 bg-white/80 rounded-full cursor-pointer [overflow:visible_!important]'
 							onClick={e => updateProgress(e)}
 							ref={progressContainerRef}
 						>
 							<div className='h-full rounded-full bg-white pointer-events-none' ref={progressRef}></div>
-							<div className='absolute w-4 h-4 rounded-full bg-white top-[-50%] transforn translate-x-[-50%] translate-y-[-25%] transition-opacity duration-150 opacity-0 pointer-events-none' ref={progressBallRef}></div>
+							<div className='absolute w-4 h-4 rounded-full bg-white top-[-50%] transforn translate-x-[-50%] translate-y-[-25%] transition-opacity duration-150 opacity-0 pointer-events-none z-30' ref={progressBallRef}></div>
 						</div>
 					</div>
 					<div onClick={toggleMute}>
