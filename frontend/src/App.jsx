@@ -168,6 +168,9 @@ function App() {
 			case 'a':
 				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setIsAdding(true);
 				break;
+			case 'u':
+				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setFilterUnion(!filterUnion);
+				break;
 			case 'Escape':
 				setViewing(undefined);
 				setIsAdding(false);
