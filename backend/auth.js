@@ -1,9 +1,8 @@
-const bcrypt = require('bcrypt');
-
-module.exports = function(password) {
-	return function(req, res, next) {
-		if (!req.query.password || !bcrypt.compareSync(req.query.password, password))
-			return res.status(401).send('Unauthorized');
+module.exports = function(req, res, next) {
+	const auth = req.headers.authorization || req.query.authorization; 
+	if (process.env.API_KEY === undefined)
 		return next();
-	};
+	if (auth === undefined || auth !== process.env.API_KEY)
+		return res.status(401).send('Unauthorized');
+	next();
 };

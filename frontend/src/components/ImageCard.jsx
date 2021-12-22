@@ -48,7 +48,7 @@ export default function ImageCard(props) {
 			{
 				isLoaded ?
 					<img
-						src={`${process.env.REACT_APP_API}/posters/${props.id}`}
+						src={`${process.env.REACT_APP_API}/posters/${props.id}?authorization=${process.env.REACT_APP_API_KEY}`}
 						alt={props.tags.join(', ')}
 						className='block w-full h-full object-cover z-10'
 						width={300}

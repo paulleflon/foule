@@ -12,21 +12,7 @@ app.use(cors({
 	origin: '*'
 }));
 app.use(express.json());
-
-
-const password = db.getPassword();
-
-
-app.get('/password', (req, res) => {
-	res.send(password !== undefined);
-});
-
-
-if (password) {
-	app.use(require('./auth')(password));
-	console.log('Auth enabled.');
-}
-
+app.use(require('./auth'));
 
 app.get('/download/:id', async (req, res) => {
 	const {id} = req.params;

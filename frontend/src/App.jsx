@@ -51,18 +51,15 @@ function App() {
 		videosCount = filtered?.filter(img => img.type === 'video').length;
 	}
 
-	// async function requiresPassword() {
-	// 	setLogging(true);
-	// 	const response = await axios.get('/password');
-	// 	setLogging(response.data);
-	// }
-
 	// Loads categories, selects a category (from localStorage or the first one) and loads images from it.
 	async function initialFetch() {
 		setIsLoading(true);
 		let res;
 		try {
 			res = await axios.get(`${process.env.REACT_APP_API}/categories/get`, {
+				'headers': {
+					'Authorization': process.env.REACT_APP_API_KEY
+				},
 				timeout: 5000
 			});
 		} catch (_) {
@@ -75,7 +72,11 @@ function App() {
 		const selection = res.data.includes(savedSelection) ? savedSelection : res.data[0];
 		setSelectedCategory(selection);
 
-		res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selection}`);
+		res = await axios.get(`${process.env.REACT_APP_API}/images/get/${selection}`, {
+			'headers': {
+				'Authorization': process.env.REACT_APP_API_KEY
+			}
+		});
 		const obj = {};
 		obj[selection] = res.data;
 		setFilter(f => ({...f, [selection]: []}));
@@ -92,10 +93,18 @@ function App() {
 	// Selects a category, or creates it if it doesn't exist
 	const selectCategory = async (name) => {
 		if (!categories.includes(name)) {
-			await axios.post(`${process.env.REACT_APP_API}/categories/add`, {name});
+			await axios.post(`${process.env.REACT_APP_API}/categories/add`, {name}, {
+				'headers': {
+					'Authorization': process.env.REACT_APP_API_KEY
+				}
+			});
 			setCategories([...categories, name]);
 		}
-		const res = await axios.get(`${process.env.REACT_APP_API}/images/get/${name}`);
+		const res = await axios.get(`${process.env.REACT_APP_API}/images/get/${name}`, {
+			'headers': {
+				'Authorization': process.env.REACT_APP_API_KEY
+			}
+		});
 		const obj = entries;
 		obj[name] = res.data;
 		setImages(obj);
@@ -109,7 +118,11 @@ function App() {
 
 	// Deletes a category
 	const deleteCategory = async (name) => {
-		await axios.post(`${process.env.REACT_APP_API}/categories/delete`, {name});
+		await axios.post(`${process.env.REACT_APP_API}/categories/delete`, {name}, {
+			'headers': {
+				'Authorization': process.env.REACT_APP_API_KEY
+			}
+		});
 		setCategories(categories.filter(c => c !== name));
 	};
 
@@ -183,7 +196,11 @@ function App() {
 
 	// Renames a category and update the images object.
 	const renameCategory = async (oldName, newName) => {
-		await axios.post(`${process.env.REACT_APP_API}/categories/rename`, {oldName, newName});
+		await axios.post(`${process.env.REACT_APP_API}/categories/rename`, {oldName, newName}, {
+			'headers': {
+				'Authorization': process.env.REACT_APP_API_KEY
+			}
+		});
 		setCategories(categories.map(c => c === oldName ? newName : c));
 		const obj = {...entries};
 		if (obj[oldName]) {
@@ -203,7 +220,11 @@ function App() {
 			obj[selectedCategory] = obj[selectedCategory].filter(i => i.id !== isEditing);
 			obj[category] = [...(obj[category] || []), entry];
 		}
-		await axios.post(`${process.env.REACT_APP_API}/images/edit/${isEditing}`, {tags, category: category || selectedCategory});
+		await axios.post(`${process.env.REACT_APP_API}/images/edit/${isEditing}`, {tags, category: category || selectedCategory}, {
+			'headers': {
+				'Authorization': process.env.REACT_APP_API_KEY
+			}
+		});
 		setImages(obj);
 		setIsEditing(undefined);
 	};
@@ -212,7 +233,11 @@ function App() {
 	const deleteImage = async () => {
 		const obj = {...entries};
 		obj[selectedCategory] = obj[selectedCategory].filter(i => i.id !== isEditing);
-		await axios.post(`${process.env.REACT_APP_API}/images/delete/${isEditing}`);
+		await axios.post(`${process.env.REACT_APP_API}/images/delete/${isEditing}`, {}, {
+			'headers': {
+				'Authorization': process.env.REACT_APP_API_KEY
+			}
+		});
 		setImages(obj);
 		setIsEditing(undefined);
 	};
