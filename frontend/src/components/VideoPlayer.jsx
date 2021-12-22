@@ -51,18 +51,18 @@ function VideoPlayer(props) {
 		yDown = null;
 	};
 
-	const toggleMute = () => {
+	const toggleMute = useCallback(() => {
 		setIsMuted(!isMuted);
 		videoRef.current.muted = !isMuted;
-	};
+	}, [isMuted]);
 
-	const togglePlayPause = () => {
+	const togglePlayPause = useCallback(() => {
 		setIsPlaying(!isPlaying);
 		if (isPlaying)
 			videoRef.current.pause();
 		else
 			videoRef.current.play();
-	};
+	}, [isPlaying]);
 
 	const updateProgress = e => {
 		const rect = progressContainerRef.current.getBoundingClientRect();
@@ -128,6 +128,8 @@ function VideoPlayer(props) {
 				break;
 			case 'f':
 				toggleFullScreen();
+				break;
+			default:
 				break;
 		}
 	}, [toggleMute, togglePlayPause]);
