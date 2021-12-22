@@ -95,7 +95,7 @@ function CategorySelect(props) {
 				renameCategory={props.rename}
 			/>
 		);
-		return mapped.length ? mapped : <Category name={filter} create={true} select={selectCategory}></Category>;
+		return mapped.length ? mapped : <Category name={filter} create={true} selectCategory={selectCategory}></Category>;
 	};
 	return (
 		<div tabIndex={0}
