@@ -1,0 +1,21 @@
+{
+	"name": "Foule Image Manager",
+	"short_name": "Foule",
+	"description": "Foule is a web application that allows you to manage your images and videos.",
+	"icons": [
+		{
+			"src": "assets/android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "assets/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	],
+	"start_url": ".",
+	"theme_color": "#1f2937",
+	"background_color": "#1f2937",
+	"display": "standalone"
+}
