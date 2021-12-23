@@ -12,8 +12,10 @@ app.use(cors({
 	origin: '*'
 }));
 app.use(express.json());
+app.get('/', (_req, res) => {
+	res.status(200).send();
+});
 app.use(require('./auth'));
-
 app.get('/download/:id', async (req, res) => {
 	const {id} = req.params;
 	const {url, type} = await db.getImage(id);
