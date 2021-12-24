@@ -28,3 +28,20 @@ self.addEventListener('message', (event) => {
 		self.skipWaiting();
 	}
 });
+
+self.addEventListener('install', (e) => {
+	console.log('[Service Worker] Install');
+});
+
+self.addEventListener('fetch', (e) => {
+	// I have no idea what this does
+	// but it's required for the app to be installable lol
+	e.respondWith((async () => {
+		const r = await caches.match(e.request);
+		console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
+		if (r) {return r;}
+		const response = await fetch(e.request);
+		return response;
+	})());
+
+});
