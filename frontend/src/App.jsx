@@ -182,7 +182,7 @@ function App() {
 				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setIsAdding(true);
 				break;
 			case 'u':
-				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setFilterUnion(!filterUnion);
+				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setFilterUnion(f => !f);
 				break;
 			case 'Escape':
 				setViewing(undefined);
@@ -192,7 +192,7 @@ function App() {
 			default:
 				break;
 		}
-	}, [shuffleImages, previousImage, nextImage, viewing]);
+	}, [shuffleImages, previousImage, nextImage, viewing, isAdding, isEditing, isTyping]);
 
 	// Renames a category and update the images object.
 	const renameCategory = async (oldName, newName) => {
