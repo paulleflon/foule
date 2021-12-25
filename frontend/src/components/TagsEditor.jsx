@@ -1,8 +1,16 @@
 import {useRef} from 'react';
 import {MdClose} from 'react-icons/md';
 
-function TagsEditor({tags, updateTags, inMenu, setIsTyping}) {
+function TagsEditor({
+	className,
+	inputClassName,
+	placeholder,
+	setIsTyping,
+	tags,
+	updateTags
+}) {
 	const inputRef = useRef(null);
+	const tagListRef = useRef(null);
 	const onDown = (e) => {
 		if (!inputRef.current.value.trim() && e.code === 'Backspace') {
 			updateTags(tags.slice(0, tags.length - 1));
@@ -15,29 +23,42 @@ function TagsEditor({tags, updateTags, inMenu, setIsTyping}) {
 			if (e.code === 'Comma')
 				value = value.substring(0, value.length - 1);
 			if (e.code === 'Enter' || e.code === 'Comma') {
-				if (value)
+				if (value) {
 					updateTags([...tags, value]);
+					tagListRef.current.scrollLeft = tagListRef.current.scrollWidth;
+				}
 				input.value = '';
 				input.focus();
 			}
 		});
 	};
 	return (
-		<div className='flex flex-row items-center'>
-			<div className={inMenu ?
-				'tags flex flex-row'
-				: 'tags flex items-center flex-wrap w-100% overflow-auto p-2 max-h-32'}>
+		<div className={`${className} flex flex-row`}>
+			<div
+				className='hide-scrollbar tags flex flex-row max-w-[300px] overflow-auto'
+				ref={tagListRef}
+			>
 				{
 					tags.map((l, i) =>
-						<div className='flex bg-green-400 px-1 py-1 mr-1 rounded-sm filter drop-shadow-md' key={`image-${i}`}>
-							<div className='max-w-xxs truncate'>{l}</div>
-							<div className='ml-2 cursor-pointer' onClick={updateTags.bind(this, tags.slice(0, tags.length - 1))}><MdClose size='1.5em'></MdClose></div>
+						<div className='flex border bg-white/40 border-white text-white p-1 rounded-sm filter drop-shadow-md mr-2' key={`image-${i}`}>
+							<div className='max-w-xs truncate'>{l}</div>
+							<div
+								className='ml-2 cursor-pointer'
+								onClick={() => updateTags(tags.slice(0, tags.length - 1))}
+							>
+								<MdClose size='1.5em' color='#ffffff'></MdClose>
+							</div>
 						</div>
 					)}
 
 			</div>
-			<input type='text' onFocus={() => setIsTyping(true)} onBlur={() => setIsTyping(false)} placeholder={inMenu ? 'Filter...' : 'Tag'}
-				className='font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48' onKeyDown={onDown} ref={inputRef} />
+			<input type='text'
+				className={inputClassName || 'font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48'}
+				onBlur={() => setIsTyping(false)}
+				onFocus={() => setIsTyping(true)}
+				onKeyDown={onDown}
+				placeholder={placeholder}
+				ref={inputRef} />
 		</div>
 	);
 }

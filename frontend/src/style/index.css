@@ -12,6 +12,11 @@ body {
 	margin: 0;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+	width: 0.5rem;
+	height: 0px;
+}
+
 input {
 	@apply rounded focus:outline-none focus:ring-4 focus:ring-white/30;
 }

@@ -20,11 +20,16 @@ function MenuBar({
 }) {
 	return (
 		<div
-			className='fixed w-full md:w-11/12 bg-gray-900/90 backdrop-blur-lg py-4 px-4 md:left-[4.5%] md:my-2 flex flex-row items-center justify-end md:justify-between shadow-xl md:rounded-2xl z-40'
+			className='fixed w-full lg:w-11/12 bg-gray-900/90 backdrop-blur-lg py-4 px-4 lg:left-[4.5%] lg:my-2 flex flex-row items-center justify-end lg:justify-between shadow-xl lg:rounded-2xl z-40'
 		>
-			<div className='font-title text-white text-4xl md:block hidden'>Foule</div>
+			<div className='font-title text-white text-4xl lg:block hidden'>Foule</div>
 			<div className='flex flex-row items-center'>
-				<TagsEditor setIsTyping={setIsTyping} tags={filter[selectedCategory]} updateTags={updateFilter} inMenu={true}></TagsEditor>
+				<TagsEditor
+					setIsTyping={setIsTyping}
+					tags={filter[selectedCategory]}
+					updateTags={updateFilter}
+					placeholder='Search...'
+				/>
 
 				<div
 					className='ml-4 cursor-pointer rounded-full hover:bg-white hover:bg-opacity-25 p-2 transition duration-200'
@@ -51,7 +56,6 @@ function MenuBar({
 					select={selectCategory}
 					rename={renameCategory}
 					setIsTyping={setIsTyping}
-					delete={deleteCategory}
 				/>
 			</div>
 		</div>
