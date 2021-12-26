@@ -314,7 +314,7 @@ function App() {
 				</EntryEditor>
 				: ''
 			}
-			<div className='relative overflow-auto'>
+			<div className='relative w-full h-full overflow-auto'>
 				<MenuBar
 					categories={categories}
 					deleteCategory={deleteCategory}
