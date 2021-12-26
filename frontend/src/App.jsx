@@ -286,14 +286,23 @@ function App() {
 	}
 	return (
 		<div className='App bg-gray-800 w-full h-full flex flex-col'>
-			{viewing !== undefined && <MediaViewer {...filtered[viewing]} previous={previousImage} next={nextImage} close={() => setViewing(undefined)} />}
+			{viewing !== undefined &&
+				<MediaViewer
+					{...filtered[viewing]}
+					close={() => setViewing(undefined)}
+					next={nextImage}
+					previous={previousImage}
+				/>
+			}
 			{isAdding ?
 				<EntryEditor
 					categories={categories}
 					close={() => setIsAdding(false)}
 					addImportedImages={addImportedImages}
 					selected={selectedCategory}>
-				</EntryEditor> : ''}
+				</EntryEditor>
+				: ''
+			}
 			{isEditing ?
 				<EntryEditor
 					categories={categories}
@@ -305,43 +314,43 @@ function App() {
 				</EntryEditor>
 				: ''
 			}
-			{/* MenuBar */}
-			<MenuBar
-				categories={categories}
-				deleteCategory={deleteCategory}
-				filter={filter}
-				filterUnion={filterUnion}
-				renameCategory={renameCategory}
-				selectCategory={selectCategory}
-				selectedCategory={selectedCategory}
-				setFilterUnion={setFilterUnion}
-				setIsTyping={setIsTyping}
-				shuffleImages={shuffleImages}
-				updateFilter={updateFilter}
-			/>
-			{entriesCount ?
-				(
-					<Gallery
-						className={(isAdding || isEditing || viewing !== undefined) ? 'overflow-hidden' : ''}
-						entries={entries}
-						entriesCount={entriesCount}
-						filtered={filtered}
-						galleryRef={galleryRef}
-						imagesCount={imagesCount}
-						selectedCategory={selectedCategory}
-						setIsEditing={setIsEditing}
-						setViewing={setViewing}
-						videosCount={videosCount}
-					/>
-				)
-				:
-				<div className='flex justify-center items-center h-full flex-col'> {/* 'No Images' indicator */}
-					<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
-						<MdOutlineNoPhotography size={48} color='#aaaaaa'></MdOutlineNoPhotography>
+			<div className='relative overflow-auto'>
+				<MenuBar
+					categories={categories}
+					deleteCategory={deleteCategory}
+					filter={filter}
+					filterUnion={filterUnion}
+					renameCategory={renameCategory}
+					selectCategory={selectCategory}
+					selectedCategory={selectedCategory}
+					setFilterUnion={setFilterUnion}
+					setIsTyping={setIsTyping}
+					shuffleImages={shuffleImages}
+					updateFilter={updateFilter}
+				/>
+				{entriesCount ?
+					(
+						<Gallery
+							entries={entries}
+							entriesCount={entriesCount}
+							filtered={filtered}
+							galleryRef={galleryRef}
+							imagesCount={imagesCount}
+							selectedCategory={selectedCategory}
+							setIsEditing={setIsEditing}
+							setViewing={setViewing}
+							videosCount={videosCount}
+						/>
+					)
+					:
+					<div className='flex justify-center items-center h-full flex-col'> {/* 'No Images' indicator */}
+						<div className='bg-black bg-opacity-50 rounded-full flex justify-center items-center w-32 h-32'>
+							<MdOutlineNoPhotography size={48} color='#aaaaaa'></MdOutlineNoPhotography>
+						</div>
+						<div className='text-gray-400 font-title text-4xl my-4'>No images</div>
 					</div>
-					<div className='text-gray-400 font-title text-4xl my-4'>No images</div>
-				</div>
-			}
+				}
+			</div>
 			<div
 				className='fixed bottom-0 right-0 m-5 bg-gray-700 shadow-lg rounded-full cursor-pointer p-2 z-40'
 				onClick={() => setIsAdding(true)}

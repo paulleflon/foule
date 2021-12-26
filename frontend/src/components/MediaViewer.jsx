@@ -37,16 +37,6 @@ function MediaViewer(props) {
 		yDown = null;
 	};
 
-	// Quick fix for mobiles where some scrollbars happen to be visible in MediaViewer.
-	useEffect(() => {
-		const s = document.createElement('style');
-		s.innerHTML = '* {overflow: hidden !important;}';
-		document.head.appendChild(s);
-		return () => {
-			document.head.removeChild(s);
-		};
-	}, []);
-
 	return (
 		<div className='fixed w-full h-full top-0 left-0 bg-black/90 backdrop-blur-sm bg-opacity-75 z-50 flex justify-center items-center'>
 			<MdChevronLeft
