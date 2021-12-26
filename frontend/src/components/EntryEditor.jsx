@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {MdClose} from 'react-icons/md';
-import axios from 'axios';
+import * as API from '../api';
 import TagsEditor from './TagsEditor';
 
 function EntryEditor(props) {
@@ -69,11 +69,7 @@ function EntryEditor(props) {
 	};
 
 	const sendEntry = () => {
-		axios.post(`${process.env.REACT_APP_API}/images/add`, {images: entries, tags, category: inputs.category.current.value}, {
-			'headers': {
-				'Authorization': process.env.REACT_APP_API_KEY
-			}
-		})
+		API.post('/images/add', {images: entries, tags, category: inputs.category.current.value})
 			.then(response => {
 				if (response.status === 200) {
 					props.addImportedImages(response.data, inputs.category.current.value);
