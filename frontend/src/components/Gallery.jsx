@@ -28,8 +28,7 @@ function Gallery({
 	return (
 		<div className={`${className} relative pt-20`}>
 			<div
-				className='images-grid flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center flex-col sm:flex-row items-center sm:items-start'
-				style={{flexFlow: 'wrap'}}
+				className='images-grid [flex-flow:wrap] flex sm:flex-wrap px-4 pt-2 transition-opacity duration-200 justify-center flex-col sm:flex-row items-center sm:items-start'
 				ref={galleryRef}
 			>
 				{filtered.map((image, i) => (<ImageCard {...image} key={image.id} edit={() => setIsEditing(image.id)} onClick={() => setViewing(i)} ></ImageCard>))}

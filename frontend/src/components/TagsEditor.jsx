@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import {MdClose} from 'react-icons/md';
 
 function TagsEditor({
@@ -23,19 +23,28 @@ function TagsEditor({
 			if (e.code === 'Comma')
 				value = value.substring(0, value.length - 1);
 			if (e.code === 'Enter' || e.code === 'Comma') {
-				if (value) {
+				if (value)
 					updateTags([...tags, value]);
-					tagListRef.current.scrollLeft = tagListRef.current.scrollWidth;
-				}
 				input.value = '';
 				input.focus();
 			}
 		});
 	};
+
+	const onWheel = e => {
+		const delta = e.deltaY;
+		tagListRef.current.scrollLeft += delta;
+	};
+
+	useEffect(() => {
+		tagListRef.current.scrollLeft = tagListRef.current.scrollWidth;
+	}, [tagListRef, tags]);
+
 	return (
 		<div className={`${className} flex flex-row`}>
 			<div
-				className='hide-scrollbar tags flex flex-row max-w-[300px] overflow-auto'
+				className={`hide-scrollbar tags flex flex-row max-w-[300px] overflow-auto ${tags.length && 'mr-2'}`}
+				onWheel={onWheel}
 				ref={tagListRef}
 			>
 				{
@@ -53,7 +62,7 @@ function TagsEditor({
 
 			</div>
 			<input type='text'
-				className={inputClassName || 'font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48'}
+				className={inputClassName || 'font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48 text-black'}
 				onBlur={() => setIsTyping(false)}
 				onFocus={() => setIsTyping(true)}
 				onKeyDown={onDown}

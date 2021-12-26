@@ -1,8 +1,5 @@
-import {useEffect} from 'react';
 import {MdChevronLeft, MdChevronRight, MdClose} from 'react-icons/md';
 import VideoPlayer from './VideoPlayer';
-let touchStartX = 0;
-let touchEndX = 0;
 
 function MediaViewer(props) {
 
@@ -38,7 +35,7 @@ function MediaViewer(props) {
 	};
 
 	return (
-		<div className='fixed w-full h-full top-0 left-0 bg-black/90 backdrop-blur-sm bg-opacity-75 z-50 flex justify-center items-center'>
+		<div className='fullscreen-container'>
 			<MdChevronLeft
 				className='absolute top-[50%] left-0 cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-25 rounded-full p-2 box-content transition-all duration-200'
 				color='#ffffff'
@@ -68,7 +65,12 @@ function MediaViewer(props) {
 						onSwipeRight={props.next}
 					/>
 			}
-			<MdClose className='absolute top-0 right-0 md:m-5 cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-25 rounded-full p-2 box-content transition-all duration-200' color='#ffffff' onClick={props.close} size={30} style={{zIndex: 1001}} />
+			<MdClose
+				className='z-[1000] absolute top-0 right-0 md:m-5 cursor-pointerbg-white bg-opacity-0 hover:bg-opacity-25 rounded-full p-2 box-content transition-all duration-200'
+				color='#ffffff'
+				onClick={props.close}
+				size={30}
+			/>
 		</div>
 	);
 }
