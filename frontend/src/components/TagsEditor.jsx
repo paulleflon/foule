@@ -32,10 +32,18 @@ function TagsEditor({
 			}
 		});
 	};
+
+	const onWheel = e => {
+		e.preventDefault();
+		const delta = e.deltaY;
+		tagListRef.current.scrollLeft += delta;
+	};
+
 	return (
 		<div className={`${className} flex flex-row`}>
 			<div
 				className='hide-scrollbar tags flex flex-row max-w-[300px] overflow-auto'
+				onWheel={onWheel}
 				ref={tagListRef}
 			>
 				{
