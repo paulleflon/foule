@@ -68,7 +68,12 @@ function MediaViewer(props) {
 						onSwipeRight={props.next}
 					/>
 			}
-			<MdClose className='absolute top-0 right-0 md:m-5 cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-25 rounded-full p-2 box-content transition-all duration-200' color='#ffffff' onClick={props.close} size={30} style={{zIndex: 1001}} />
+			<MdClose
+				className='z-[1000] absolute top-0 right-0 md:m-5 cursor-pointerbg-white bg-opacity-0 hover:bg-opacity-25 rounded-full p-2 box-content transition-all duration-200'
+				color='#ffffff'
+				onClick={props.close}
+				size={30}
+			/>
 		</div>
 	);
 }

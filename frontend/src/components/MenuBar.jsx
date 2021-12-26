@@ -35,8 +35,7 @@ function MenuBar({
 					/>
 
 					<div
-						className='relative ml-4'
-						style={{width: '45px', height: '45px'}}
+						className='relative ml-4 w-[45px] h-[45px]'
 						title={filterUnion ? 'Union' : 'Intersection'}
 					>
 						<div className='absolute text-white  top-[-3px] right-[-3px] cursor-pointer hover:underline' onClick={() => setExplainOpen(true)}>?</div>
