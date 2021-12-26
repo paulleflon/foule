@@ -88,8 +88,8 @@ function EntryEditor(props) {
 	};
 
 	return (
-		<div className='z-50 image-adder-container fixed w-full h-full flex justify-center items-center bg-black/90 backdrop-blur-lg bg-opacity-50'>
-			<div className='relative image-adder shadow-xl bg-gray-800 md:w-1/2 h-5/6 md:h-2/3 w-5/6 rounded-lg p-4 pb-20 md:pb-4 overflow-hidden'>
+		<div className='fullscreen-container'>
+			<div className='pop-up'>
 				<MdClose
 					className='absolute top-0 right-0 m-2 rounded-full cursor-pointer hover:bg-white hover:bg-opacity-25 p-2 transition-all duration-100'
 					size={40}
@@ -98,29 +98,29 @@ function EntryEditor(props) {
 				></MdClose>
 				{!props.editing &&
 					<div>
-						<div className='font-title text-4xl text-white py-4 px-2'>Add images/videos</div>
+						<div className='pop-up-title'>Add images/videos</div>
 						<div className='my-4 overflow-y-auto max-h-32'>
 							{
 								entries.map((e, i) =>
-									<div className='flex text-white' key={`image-${i}`}>
+									<div className='flex' key={`image-${i}`}>
 										<span className='inline-block w-3/4 truncate'>{e.url}</span>
 										<span className='mx-2 cursor-pointer' onClick={removeEntry.bind(this, i)}><MdClose size='1.5em'></MdClose></span>
 									</div>
 								)}
 						</div>
 						<div className='flex'>
-							<input type='text' placeholder='Image/Video URL' className='font-default text-xl border-none h-8 px-2 w-1/2 rounded-l-sm rounded-r-none' ref={inputs.src} />
-							<button className='bg-white h-8 border-l px-2 border-black' onClick={addEntry.bind(this, 'image')}>Add</button>
-							<button className='bg-white h-8 border-l px-2 border-black rounded-r-sm' onClick={addEntry.bind(this, 'video')}>Add Video</button>
+							<input type='text' placeholder='Image/Video URL' className='font-default text-black text-xl border-none h-8 px-2 w-1/2 rounded-l-sm rounded-r-none' ref={inputs.src} />
+							<button className='bg-white text-black h-8 border-l px-2 border-black' onClick={addEntry.bind(this, 'image')}>Add</button>
+							<button className='bg-white text-black h-8 border-l px-2 border-black rounded-r-sm' onClick={addEntry.bind(this, 'video')}>Add Video</button>
 						</div>
 					</div>
 				}
 				<div>
-					<div className='font-title text-4xl text-white py-4 px-2'>{props.editing ? 'Edit entry' : 'Set metadata'}</div>
-					<div className='font-title text-xl text-white'>Tags</div>
-					<TagsEditor tags={tags} updateTags={updateTags.bind(this)} />
-					<div className='font-title text-xl text-white'>Category</div>
-					<select ref={inputs.category}>
+					<div className='pop-up-title mt-4'>{props.editing ? 'Edit entry' : 'Set metadata'}</div>
+					<div className='pop-up-title text-left text-xl'>Tags</div>
+					<TagsEditor tags={tags} updateTags={updateTags.bind(this)} placeholder='Tag' />
+					<div className='pop-up-title text-left text-xl'>Category</div>
+					<select ref={inputs.category} className='text-black'>
 						<option className='font-bold' disabled>Select a category</option>
 						<option>{props.selected}</option>
 						{props.categories.map(c => c === props.selected ? null : <option key={c}>{c}</option>)}

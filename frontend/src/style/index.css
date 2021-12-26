@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Catamaran:wght@900&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Catamaran:wght@900&family=Roboto&family=Product+Sans&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,6 +19,24 @@ body {
 
 input {
 	@apply rounded focus:outline-none focus:ring-4 focus:ring-white/30;
+}
+
+@layer components {
+	.fullscreen-container {
+		@apply z-50 fixed w-full h-full flex justify-center items-center bg-black/70 backdrop-blur-lg bg-opacity-50;
+	}
+
+	.pop-up {
+		@apply relative bg-gray-800 w-[600px] max-w-[90%] h-min rounded p-4 text-white;
+	}
+
+	.pop-up-title {
+		@apply font-title-alternate font-bold text-white text-center text-lg md:text-3xl my-2;
+	}
+
+	.pop-up-close {
+		@apply absolute top-0 right-0 m-2 rounded-full cursor-pointer hover:bg-white hover:bg-opacity-25 p-2 transition-all duration-100;
+	}
 }
 
 .image-card {

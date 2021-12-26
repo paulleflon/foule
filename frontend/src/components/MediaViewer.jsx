@@ -35,7 +35,7 @@ function MediaViewer(props) {
 	};
 
 	return (
-		<div className='fixed w-full h-full top-0 left-0 bg-black/90 backdrop-blur-sm bg-opacity-75 z-50 flex justify-center items-center'>
+		<div className='fullscreen-container'>
 			<MdChevronLeft
 				className='absolute top-[50%] left-0 cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-25 rounded-full p-2 box-content transition-all duration-200'
 				color='#ffffff'

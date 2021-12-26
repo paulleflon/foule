@@ -62,7 +62,7 @@ function TagsEditor({
 
 			</div>
 			<input type='text'
-				className={inputClassName || 'font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48'}
+				className={inputClassName || 'font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48 text-black'}
 				onBlur={() => setIsTyping(false)}
 				onFocus={() => setIsTyping(true)}
 				onKeyDown={onDown}

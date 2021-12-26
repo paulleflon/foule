@@ -66,15 +66,15 @@ function MenuBar({
 				</div>
 			</div>
 			{explainOpen &&
-				<div className='z-50 image-adder-container fixed w-full h-full flex justify-center items-center bg-black/90 backdrop-blur-lg bg-opacity-50'>
-					<div className='relative image-adder shadow-xl bg-gray-800 text-white md:w-1/2 w-5/6 rounded-lg p-4 pb-20 md:pb-4 overflow-hidden'>
+				<div className='fullscreen-container'>
+					<div className='pop-up'>
 						<MdClose
-							className='absolute top-0 right-0 m-2 rounded-full cursor-pointer hover:bg-white hover:bg-opacity-25 p-2 transition-all duration-100'
+							className='pop-up-close'
 							size={40}
 							color='#ffffff'
 							onClick={() => setExplainOpen(false)}
 						></MdClose>
-						<div className='font-title text-xl text-white py-4 px-2 text-center lg:text-4xl'> 'Union' and 'Intersection' search modes</div>
+						<div className='pop-up-title'> 'Union' and 'Intersection' search modes</div>
 						<div>
 							<div className='flex flex-row items-center font-bold'>
 								<img src={JoinFull} alt='Intersection' className='w-[45px] h-[45px] mr-2' />
