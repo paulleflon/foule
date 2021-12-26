@@ -1,8 +1,5 @@
-import {useEffect} from 'react';
 import {MdChevronLeft, MdChevronRight, MdClose} from 'react-icons/md';
 import VideoPlayer from './VideoPlayer';
-let touchStartX = 0;
-let touchEndX = 0;
 
 function MediaViewer(props) {
 
