@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import {MdClose} from 'react-icons/md';
 
 function TagsEditor({
@@ -23,10 +23,8 @@ function TagsEditor({
 			if (e.code === 'Comma')
 				value = value.substring(0, value.length - 1);
 			if (e.code === 'Enter' || e.code === 'Comma') {
-				if (value) {
+				if (value)
 					updateTags([...tags, value]);
-					tagListRef.current.scrollLeft = tagListRef.current.scrollWidth;
-				}
 				input.value = '';
 				input.focus();
 			}
@@ -34,10 +32,13 @@ function TagsEditor({
 	};
 
 	const onWheel = e => {
-		e.preventDefault();
 		const delta = e.deltaY;
 		tagListRef.current.scrollLeft += delta;
 	};
+
+	useEffect(() => {
+		tagListRef.current.scrollLeft = tagListRef.current.scrollWidth;
+	}, [tagListRef, tags]);
 
 	return (
 		<div className={`${className} flex flex-row`}>
