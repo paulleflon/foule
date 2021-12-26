@@ -43,7 +43,7 @@ function TagsEditor({
 	return (
 		<div className={`${className} flex flex-row`}>
 			<div
-				className='hide-scrollbar tags flex flex-row max-w-[300px] overflow-auto'
+				className={`hide-scrollbar tags flex flex-row max-w-[300px] overflow-auto ${tags.length && 'mr-2'}`}
 				onWheel={onWheel}
 				ref={tagListRef}
 			>
