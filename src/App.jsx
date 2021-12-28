@@ -2,6 +2,7 @@ import React, {createRef, useCallback, useEffect, useState} from 'react';
 import {MdAdd, MdOutlineNoPhotography} from 'react-icons/md';
 import {VscDebugDisconnect} from 'react-icons/vsc';
 import * as API from './api';
+import axios from 'axios';
 import Gallery from './components/Gallery';
 import EntryEditor from './components/EntryEditor';
 import MediaViewer from './components/MediaViewer';

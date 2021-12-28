@@ -14,17 +14,6 @@ function Gallery({
 	setViewing,
 	videosCount
 }) {
-	console.log({
-		entries,
-		entriesCount,
-		filtered,
-		galleryRef,
-		imagesCount,
-		selectedCategory,
-		setIsEditing,
-		setViewing,
-		videosCount
-	});
 	return (
 		<div className={`${className} relative pt-20`}>
 			<div
