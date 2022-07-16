@@ -1,17 +1,18 @@
-import React, {createRef, useCallback, useEffect, useState} from 'react';
-import {MdAdd, MdOutlineNoPhotography} from 'react-icons/md';
-import {VscDebugDisconnect} from 'react-icons/vsc';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { MdAdd, MdOutlineNoPhotography } from 'react-icons/md';
+import { VscDebugDisconnect } from 'react-icons/vsc';
 import * as API from './api';
 import Gallery from './components/Gallery';
 import EntryEditor from './components/EntryEditor';
 import MediaViewer from './components/MediaViewer';
 import MenuBar from './components/MenuBar';
+import Media from './typings/Media';
 
-function App() {
+const App = () => {
 	// Array of all categories
-	const [categories, setCategories] = useState();
+	const [categories, setCategories] = useState<string[]>([]);
 	// Currently selected category
-	const [selectedCategory, setSelectedCategory] = useState();
+	const [selectedCategory, setSelectedCategory] = useState<string>('');
 	// Whether the app is loading
 	const [isLoading, setIsLoading] = useState(true);
 	// Whether loading failed
@@ -19,34 +20,35 @@ function App() {
 	// Whether the user is typing
 	const [isTyping, setIsTyping] = useState(false);
 	// Object of all image arrays, keyed by category
-	const [entries, setImages] = useState({});
+	const [media, setMedia] = useState<Record<string, Media[]>>({});
 	// Whether the user is currently adding an image
 	const [isAdding, setIsAdding] = useState(false);
-	// Whether the user is currently editing an image
-	const [isEditing, setIsEditing] = useState(undefined);
-	// The tags to filter in the gallery
-	const [filter, setFilter] = useState({});
-	// Whether the filter tags have to be applied by union or intersection (false is intersection)
+	// The id of the media that is currently beding edited. `null` if the user is not editing any media. 
+	const [isEditing, setIsEditing] = useState<string | null>(null);
+	// The tags to filter in the gallery, for each category.
+	const [filter, setFilter] = useState<Record<string, string[]>>({});
+	// Whether the filter tags have to be applied by union or intersection (`false` is intersection)
 	const [filterUnion, setFilterUnion] = useState(false);
-	// The index of the image currently being viewed in the selected category
-	const [viewing, setViewing] = useState(undefined);
+	// The index of the media currently being viewed in the selected category
+	// `null` if the user is not viewing any media.
+	const [viewing, setViewing] = useState<number | null>(null);
 	// Ref to the image gallery container
-	const galleryRef = createRef();
-	let filtered, // Filtered images array
-		entriesCount, // Total number of displayed entries (image and video)
-		imagesCount, // Number of images in the selected category
-		videosCount; // Number of videos in the selected category
+	const galleryRef = useRef<HTMLDivElement>(null);
+	let filtered: Media[] = []; // Filtered medias array
+	let mediaCount = 0; // Total number of displayed medias (image and video)
+	let imagesCount = 0; // Number of images in the selected category
+	let videosCount = 0; // Number of videos in the selected category
 	if (!isLoading) { // These are only used if the app is loaded
-		filtered = entries[selectedCategory]?.filter(img => {
+		filtered = media[selectedCategory]?.filter(media => {
 			if (filter[selectedCategory].length === 0) return true;
-			const imgTags = img.tags.map(t => t.toLowerCase());
+			const imgTags = media.tags.map((t: string) => t.toLowerCase());
 			if (filterUnion) {
 				return filter[selectedCategory].some(f => imgTags.includes(f.toLowerCase()));
 			} else {
 				return filter[selectedCategory].every(f => imgTags.includes(f.toLowerCase()));
 			}
 		});
-		entriesCount = filtered?.length || 0;
+		mediaCount = filtered?.length || 0;
 		imagesCount = filtered?.filter(img => img.type === 'image').length;
 		videosCount = filtered?.filter(img => img.type === 'video').length;
 	}
@@ -56,7 +58,7 @@ function App() {
 		setIsLoading(true);
 		let res;
 		try {
-			res = await API.get('/categories/get', {timeout: 5000});
+			res = await API.get('/categories/get', { timeout: 5000 });
 		} catch (_) {
 			setIsFailing(true);
 			setIsLoading(false);
@@ -68,10 +70,10 @@ function App() {
 		setSelectedCategory(selection);
 
 		res = await API.get(`/images/get/${selection}`);
-		const obj = {};
+		const obj: Record<string, Media[]> = {};
 		obj[selection] = res.data;
-		setFilter(f => ({...f, [selection]: []}));
-		setImages(obj);
+		setFilter(f => ({ ...f, [selection]: [] }));
+		setMedia(obj);
 		setIsLoading(false);
 		setIsFailing(false);
 	}
@@ -82,15 +84,15 @@ function App() {
 	}, []);
 
 	// Selects a category, or creates it if it doesn't exist
-	const selectCategory = async (name) => {
+	const selectCategory = async (name: string) => {
 		if (!categories.includes(name)) {
-			await API.post('/categories/add', {name});
+			await API.post('/categories/add', { name });
 			setCategories([...categories, name]);
 		}
 		const res = await API.get(`/images/get/${name}`);
-		const obj = entries;
+		const obj = media;
 		obj[name] = res.data;
-		setImages(obj);
+		setMedia(obj);
 		if (!filter[name]) {
 			filter[name] = [];
 			setFilter(filter);
@@ -100,118 +102,117 @@ function App() {
 	};
 
 	// Deletes a category
-	const deleteCategory = async (name) => {
-		await API.post('/categories/delete', {name});
+	const deleteCategory = async (name: string) => {
+		await API.post('/categories/delete', { name });
 		setCategories(categories.filter(c => c !== name));
 	};
 
-	// Adds to the app's state images that have been sent to the server
-	const addImportedImages = (added, category) => {
-		const obj = {...entries};
+	// Adds to the app's state media that has been sent to the server
+	const addImportedMedia = (added: Media[], category: string) => {
+		const obj = { ...media };
 		obj[category] = [...(obj[category] || []), ...added];
-		setImages(obj);
+		setMedia(obj);
 		setIsAdding(false);
 	};
 
-	// Shuffles the images in the selected category
-	const shuffleImages = useCallback(() => {
+	// Shuffles the media in the selected category
+	const shuffleMedia = useCallback(() => {
 		const gallery = galleryRef.current;
-		if (!gallery) return;
-		gallery.style.opacity = 0;
+		if (!gallery)
+			return;
+		gallery.style.opacity = '0';
 		setTimeout(() => {
-			const obj = {...entries};
+			const obj = { ...media };
 			obj[selectedCategory] = obj[selectedCategory].sort(() => Math.random() - 0.5);
-			setImages(obj);
-			gallery.style.opacity = 1;
+			setMedia(obj);
+			gallery.style.opacity = '1';
 		}, 250);
-	}, [galleryRef, entries, selectedCategory]);
+	}, [galleryRef, media, selectedCategory]);
 
 	// Views the previous entry.
 	const previousImage = useCallback(() => {
-		const i = viewing;
+		const i = viewing ?? 0;
 		if (i - 1 < 0)
-			setViewing(entriesCount - 1);
+			setViewing(mediaCount - 1);
 		else
 			setViewing(i - 1);
-	}, [viewing, entriesCount]);
+	}, [viewing, mediaCount]);
 
 	// Views the next entry.
 	const nextImage = useCallback(() => {
-		const i = viewing;
-		if (i + 1 >= entriesCount)
+		const i = viewing ?? 0;
+		if (i + 1 >= mediaCount)
 			setViewing(0);
 		else
 			setViewing(i + 1);
-	}, [viewing, entriesCount]);
+	}, [viewing, mediaCount]);
 
 	// Event handler for keypresses
 	// Handles shuffling images and viewing previous/next images
-	const handleUserKeyPress = useCallback(e => {
+	const handleUserKeyPress = useCallback((e: KeyboardEvent) => {
 		switch (e.key) {
 			case 'ArrowLeft':
-				if (viewing !== undefined) previousImage();
+				if (viewing !== null) previousImage();
 				break;
 			case 'ArrowRight':
-				if (viewing !== undefined) nextImage();
+				if (viewing !== null) nextImage();
 				break;
 			case 's':
-				if (!isTyping && !isAdding && !isEditing && viewing === undefined) shuffleImages();
+				if (!isTyping && !isAdding && !isEditing && viewing === null) shuffleMedia();
 				break;
 			case 'a':
-				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setIsAdding(true);
+				if (!isTyping && !isAdding && !isEditing && viewing === null) setIsAdding(true);
 				break;
 			case 'u':
-				if (!isTyping && !isAdding && !isEditing && viewing === undefined) setFilterUnion(f => !f);
+				if (!isTyping && !isAdding && !isEditing && viewing === null) setFilterUnion(f => !f);
 				break;
 			case 'Escape':
-				setViewing(undefined);
+				setViewing(null);
 				setIsAdding(false);
-				setIsEditing(false);
-				break;
-			default:
+				setIsEditing(null);
 				break;
 		}
-	}, [shuffleImages, previousImage, nextImage, viewing, isAdding, isEditing, isTyping]);
+	}, [shuffleMedia, previousImage, nextImage, viewing, isAdding, isEditing, isTyping]);
 
 	// Renames a category and update the images object.
-	const renameCategory = async (oldName, newName) => {
-		await API.post('/categories/rename', {oldName, newName});
+	const renameCategory = async (oldName: string, newName: string) => {
+		await API.post('/categories/rename', { oldName, newName });
 		setCategories(categories.map(c => c === oldName ? newName : c));
-		const obj = {...entries};
+		const obj = { ...media };
 		if (obj[oldName]) {
-			obj[oldName] = obj[oldName].map(i => ({...i, category: newName}));
+			obj[oldName] = obj[oldName].map(i => ({ ...i, category: newName }));
 			obj[newName] = obj[oldName];
 			delete obj[oldName];
-			setImages(obj);
+			setMedia(obj);
 		}
 	};
 
-	// Edits an entry, both in the images object and in the server
-	const editImage = async (tags, category) => {
-		const obj = {...entries};
-		obj[selectedCategory] = obj[selectedCategory].map(i => i.id === isEditing ? {...i, tags} : i);
+	// Edits a media
+	const editMedia = async (tags: string[], category: string) => {
+		const obj = { ...media };
+		obj[selectedCategory] = obj[selectedCategory].map(i => i.id === isEditing ? { ...i, tags } : i);
 		if (category) {
-			const entry = obj[selectedCategory].find(i => i.id === isEditing);
+			const entry = obj[selectedCategory].find(i => i.id === isEditing)!;
 			obj[selectedCategory] = obj[selectedCategory].filter(i => i.id !== isEditing);
 			obj[category] = [...(obj[category] || []), entry];
 		}
-		await API.post(`/images/edit/${isEditing}`, {tags, category: category || selectedCategory});
-		setImages(obj);
-		setIsEditing(undefined);
+		await API.post(`/images/edit/${isEditing}`, { tags, category: category || selectedCategory });
+		setMedia(obj);
+		setIsEditing(null);
 	};
 
-	// Deletes an entry, both in the images object and in the server
+	// Deletes a media
 	const deleteImage = async () => {
-		const obj = {...entries};
+		const obj = { ...media };
 		obj[selectedCategory] = obj[selectedCategory].filter(i => i.id !== isEditing);
 		await API.post(`/images/delete/${isEditing}`);
-		setImages(obj);
-		setIsEditing(undefined);
+		setMedia(obj);
+		setIsEditing(null);
 	};
 
 	// Updates the filter tags
-	const updateFilter = (tags) => {
-		const obj = {...filter};
+	const updateFilter = (tags: string[]) => {
+		const obj = { ...filter };
 		obj[selectedCategory] = tags;
 		setFilter(obj);
 	};
@@ -253,10 +254,10 @@ function App() {
 	}
 	return (
 		<div className='App bg-gray-800 w-full h-full flex flex-col'>
-			{viewing !== undefined &&
+			{viewing !== null &&
 				<MediaViewer
 					{...filtered[viewing]}
-					close={() => setViewing(undefined)}
+					close={() => setViewing(null)}
 					next={nextImage}
 					previous={previousImage}
 				/>
@@ -265,7 +266,7 @@ function App() {
 				<EntryEditor
 					categories={categories}
 					close={() => setIsAdding(false)}
-					addImportedImages={addImportedImages}
+					addImportedImages={addImportedMedia}
 					selected={selectedCategory}>
 				</EntryEditor>
 				: ''
@@ -273,9 +274,9 @@ function App() {
 			{isEditing ?
 				<EntryEditor
 					categories={categories}
-					close={() => setIsEditing(undefined)}
-					editing={entries[selectedCategory]?.find(img => img.id === isEditing)}
-					edit={editImage}
+					close={() => setIsEditing(null)}
+					editing={media[selectedCategory]?.find(img => img.id === isEditing)}
+					edit={editMedia}
 					delete={deleteImage}
 					selected={selectedCategory}>
 				</EntryEditor>
@@ -292,14 +293,15 @@ function App() {
 					selectedCategory={selectedCategory}
 					setFilterUnion={setFilterUnion}
 					setIsTyping={setIsTyping}
-					shuffleImages={shuffleImages}
+					shuffleImages={shuffleMedia}
 					updateFilter={updateFilter}
 				/>
-				{entriesCount ?
+				{mediaCount ?
 					(
 						<Gallery
-							entries={entries}
-							entriesCount={entriesCount}
+							className=''
+							entries={media}
+							entriesCount={mediaCount}
 							filtered={filtered}
 							galleryRef={galleryRef}
 							imagesCount={imagesCount}
