@@ -3,12 +3,22 @@ import {RiDeleteBin6Line, RiEdit2Fill} from 'react-icons/ri';
 import {AiOutlineCaretDown} from 'react-icons/ai';
 import {VscListSelection} from 'react-icons/vsc';
 
+interface CategoryProps {
+	renameCategory: (oldName: string, newName: string) => void;
+	name: string;
+	setIsTyping: (v: boolean) => void;
+	create: boolean;
+	deleteCategory: (n: string) => void;
+	selectCategory: (n: string) => void;
 
-function Category(props) {
+}
+
+function Category(props: CategoryProps) {
 	const [renaming, setRenaming] = React.useState(false);
-	const onDown = e => {
-		if (e.key === 'Enter' && e.target.value.trim().length) {
-			props.renameCategory(props.name, e.target.value);
+	const onDown = (e: KeyboardEvent) => {
+		const target = e.target as HTMLInputElement;
+		if (e.key === 'Enter' && target.value.trim().length) {
+			props.renameCategory(props.name, target.value);
 			setRenaming(false);
 		} else if (e.key === 'Escape') {
 			setRenaming(false);
@@ -25,7 +35,7 @@ function Category(props) {
 						className='w-full outline-none border-2 rounded-md text-lg transition-all duration-100'
 						type='text'
 						defaultValue={props.name}
-						onKeyDown={onDown}
+						onKeyDown={onDown as any}
 						onFocus={() => props.setIsTyping(true)}
 						onBlur={() => {setRenaming(false); props.setIsTyping(false);}}
 						autoFocus />
@@ -53,30 +63,41 @@ function Category(props) {
 	);
 }
 
-function CategorySelect(props) {
-	const inputRef = useRef();
-	const categorySelectRef = useRef();
+interface CategorySelectProps {
+	categories: string[];
+	rename: (oldName: string, newName: string) => void;
+	setIsTyping: (v: boolean) => void;
+	select: (n: string) => void;
+	selected: string;
+	delete: (n: string) => void;
+}
+
+function CategorySelect(props: CategorySelectProps) {
+	const inputRef = useRef<HTMLInputElement>(null);
+	const categorySelectRef = useRef<HTMLDivElement>(null);
 	const [filter, setFilter] = useState('');
 	const [focused, setFocused] = useState(false);
 
 	const onChange = () => {
-		setFilter(inputRef.current.value);
+		setFilter(inputRef.current!?.value);
 	};
 
 	const onBlur = () => {
 		setFocused(false);
 		setFilter('');
-		inputRef.current.value = '';
+		if (inputRef.current)
+			inputRef.current.value = '';
 	};
 
-	const selectCategory = name => {
+	const selectCategory = (name: string) => {
 		if (!name.length)
 			return;
 		props.select(name);
-		categorySelectRef.current.blur();
+		if (categorySelectRef.current)
+			categorySelectRef.current.blur();
 	};
 
-	const deleteCategory = name => {
+	const deleteCategory = (name: string) => {
 		props.delete(name);
 	};
 
@@ -89,13 +110,19 @@ function CategorySelect(props) {
 			<Category
 				key={c}
 				name={c}
+				create={false}
 				setIsTyping={props.setIsTyping}
 				selectCategory={selectCategory}
 				deleteCategory={deleteCategory}
 				renameCategory={props.rename}
 			/>
 		);
-		return mapped.length ? mapped : <Category name={filter} create={true} selectCategory={selectCategory}></Category>;
+		return mapped.length ? mapped : <Category name={filter}
+			create={true}
+			deleteCategory={deleteCategory}
+			selectCategory={selectCategory}
+			renameCategory={props.rename}
+			setIsTyping={props.setIsTyping}></Category>;
 	};
 	return (
 		<div tabIndex={0}
@@ -112,7 +139,7 @@ function CategorySelect(props) {
 				className={`${!focused ? 'h-0' : ''} transition-all overflow-hidden absolute right-0 w-3/4 md:w-full bg-white my-2 mx-2 md:m-0 rounded-b rounded-t md:rounded-t-none`}>
 				<div className='p-2'>
 					<input
-						onBlur={e => {e.stopPropagation(); categorySelectRef.current.focus(); props.setIsTyping(false);}}
+						onBlur={e => { e.stopPropagation(); categorySelectRef.current && categorySelectRef.current.focus(); props.setIsTyping(false);}}
 						onFocus={() => props.setIsTyping(true)}
 						className='px-2 outline-none border-2 rounded-md w-full m-auto focus:border-blue-400 text-lg transition-all duration-100'
 						type='text'
