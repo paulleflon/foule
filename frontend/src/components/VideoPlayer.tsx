@@ -1,17 +1,17 @@
-import React, {useEffect, useRef, useState, useCallback} from 'react';
-import {MdFullscreen, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp} from 'react-icons/md';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { MdFullscreen, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp } from 'react-icons/md';
 
-function VideoPlayer(props) {
+function VideoPlayer(props: VidePlayerProps) {
 	const [isPlaying, setIsPlaying] = useState(true);
 	const [isMuted, setIsMuted] = useState(true);
-	const [controlsOutTimeout, setControlsOutTimeout] = useState(null);
-	const containerRef = useRef();
-	const videoContainerRef = useRef();
-	const videoRef = useRef();
-	const controlsRef = useRef();
-	const progressContainerRef = useRef();
-	const progressRef = useRef();
-	const progressBallRef = useRef();
+	const [controlsOutTimeout, setControlsOutTimeout] = useState<NodeJS.Timeout | null>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const videoContainerRef = useRef<HTMLDivElement>(null);
+	const videoRef = useRef<HTMLVideoElement>(null);
+	const controlsRef = useRef<HTMLDivElement>(null);
+	const progressContainerRef = useRef<HTMLDivElement>(null);
+	const progressRef = useRef<HTMLDivElement>(null);
+	const progressBallRef = useRef<HTMLDivElement>(null);
 	const buttonProps = {
 		color: '#ffffff',
 		className: 'cursor-pointer',
@@ -19,14 +19,14 @@ function VideoPlayer(props) {
 	};
 
 
-	let xDown = null;
-	let yDown = null;
-	function handleTouchStart(e) {
+	let xDown: number | null = null;
+	let yDown: number | null = null;
+	function handleTouchStart(e: TouchEvent) {
 		const firstTouch = e.touches[0];
 		xDown = firstTouch.clientX;
 		yDown = firstTouch.clientY;
 	};
-	function handleTouchMove(e) {
+	function handleTouchMove(e: TouchEvent) {
 		if (!xDown || !yDown)
 			return;
 
@@ -53,18 +53,23 @@ function VideoPlayer(props) {
 
 	const toggleMute = useCallback(() => {
 		setIsMuted(!isMuted);
-		videoRef.current.muted = !isMuted;
+		if (videoRef.current)
+			videoRef.current.muted = !isMuted;
 	}, [isMuted]);
 
 	const togglePlayPause = useCallback(() => {
 		setIsPlaying(!isPlaying);
+		if (!videoRef.current)
+			return;
 		if (isPlaying)
 			videoRef.current.pause();
 		else
 			videoRef.current.play();
 	}, [isPlaying]);
 
-	const updateProgress = e => {
+	const updateProgress = (e: MouseEvent) => {
+		if (!progressContainerRef.current || !videoRef.current)
+			return;
 		const rect = progressContainerRef.current.getBoundingClientRect();
 		const x = e.clientX - rect.left;
 		const percent = x / rect.width;
@@ -72,46 +77,57 @@ function VideoPlayer(props) {
 	};
 
 	const videoMouseMove = () => {
-		controlsRef.current.style.opacity = 1;
+		if (!controlsRef.current || !videoRef.current)
+			return;
+		controlsRef.current.style.opacity = '1';
 		videoRef.current.style.cursor = 'default';
-		clearTimeout(controlsOutTimeout);
+		clearTimeout(controlsOutTimeout as NodeJS.Timeout);
 		setControlsOutTimeout(setTimeout(() => {
-			videoRef.current.style.cursor = 'none';
-			controlsRef.current.style.opacity = 0;
+			if (videoRef.current)
+				videoRef.current.style.cursor = 'none';
+			if (controlsRef.current)
+				controlsRef.current.style.opacity = '0';
 		}, 5000));
 	};
 
 	const videoMouseLeave = () => {
-		controlsRef.current.style.opacity = 0;
-		clearTimeout(controlsOutTimeout);
+		if (controlsRef.current)
+			controlsRef.current.style.opacity = '0';
+		clearTimeout(controlsOutTimeout as NodeJS.Timeout);
 		setControlsOutTimeout(null);
 	};
-	const progressMouseEnter = () => progressBallRef.current.style.opacity = 1;
-	const progressMouseLeave = () => progressBallRef.current.style.opacity = 0;
+	const progressMouseEnter = () => progressBallRef.current!.style.opacity = '0';
+	const progressMouseLeave = () => progressBallRef.current!.style.opacity = '0';
 
 	const onTimeUpdate = () => {
+		if (!videoRef.current || !progressRef.current || !progressBallRef.current)
+			return;
 		progressRef.current.style.width = `${videoRef.current.currentTime / videoRef.current.duration * 100}%`;
 		progressBallRef.current.style.left = `${videoRef.current.currentTime / videoRef.current.duration * 100}%`;
 	};
 
 	function toggleFullScreen() {
 		const vid = videoRef.current;
+		if (!vid)
+			return;
 		if (!document.fullscreenElement) {
 			if (vid.requestFullscreen)
 				vid.requestFullscreen();
-			else if (vid.webkitEnterFullscreen)
-				vid.webkitEnterFullscreen();
+			else if ((vid as any).webkitEnterFullscreen)
+				(vid as any).webkitEnterFullscreen();
 		}
 		else {
 			if (document.exitFullscreen)
 				document.exitFullscreen();
-			else if (vid.webkitExitFullscreen)
-				vid.webkitExitFullscreen();
+			else if ((vid as any).webkitExitFullscreen)
+				(vid as any).webkitExitFullscreen();
 		}
 	}
 
-	const keyboardControl = useCallback(e => {
+	const keyboardControl = useCallback((e: KeyboardEvent) => {
 		const vid = videoRef.current;
+		if (!vid)
+			return;
 		switch (e.key.toLowerCase()) {
 			case 'j':
 				vid.currentTime = Math.max(0, vid.currentTime - (e.shiftKey ? 0.05 : 5));
@@ -138,6 +154,8 @@ function VideoPlayer(props) {
 		document.addEventListener('keydown', keyboardControl);
 		const vid = videoRef.current;
 		const container = videoContainerRef.current;
+		if (!vid || !container)
+			return;
 		if (vid.width > vid.height) {
 			container.style.width = '100%';
 			vid.style.width = '100%';
@@ -171,8 +189,8 @@ function VideoPlayer(props) {
 					ref={videoRef}
 					onClick={togglePlayPause}
 					onTimeUpdate={onTimeUpdate}
-					onTouchStart={handleTouchStart}
-					onTouchMove={handleTouchMove}
+					onTouchStart={handleTouchStart as any}
+					onTouchMove={handleTouchMove as any}
 					onPause={() => setIsPlaying(false)}
 					onPlay={() => setIsPlaying(true)}
 				>
@@ -193,7 +211,7 @@ function VideoPlayer(props) {
 					>
 						<div
 							className='relative w-full h-1 bg-white/80 rounded-full cursor-pointer [overflow:visible_!important]'
-							onClick={e => updateProgress(e)}
+							onClick={e => updateProgress(e as any)}
 							ref={progressContainerRef}
 						>
 							<div className='h-full rounded-full bg-white pointer-events-none' ref={progressRef}></div>
@@ -211,5 +229,11 @@ function VideoPlayer(props) {
 		</div>
 	);
 };
-
 export default VideoPlayer;
+
+export interface VidePlayerProps {
+	className?: string;
+	onSwipeLeft: () => void;
+	onSwipeRight: () => void;
+	src: string;
+}

@@ -1,20 +1,21 @@
-import React, {useRef, useState} from 'react';
-import {MdClose} from 'react-icons/md';
+import React, { useRef, useState } from 'react';
+import { MdClose } from 'react-icons/md';
 import * as API from '../api';
+import Media from '../typings/Media';
 import TagsEditor from './TagsEditor';
 
-function EntryEditor(props) {
-	const [entries, setEntries] = useState([]);
+function EntryEditor(props: EntryEditorProps) {
+	const [entries, setEntries] = useState<Partial<Media>[]>([]);
 	const [tags, setTags] = useState(props.editing ? props.editing.tags : []);
 	const inputs = {
-		src: useRef(),
-		tags: useRef(),
-		category: useRef()
+		src: useRef<HTMLInputElement>(null),
+		tags: useRef<HTMLInputElement>(null),
+		category: useRef<HTMLSelectElement>(null)
 	};
 
-	const addEntry = type => {
-		const value = inputs.src.current.value;
-		if (!value.trim().length)
+	const addEntry = (type: 'video' | 'image') => {
+		const value = inputs.src.current?.value;
+		if (!value || !value.trim().length)
 			return;
 		try {
 			new URL(value);
@@ -33,11 +34,13 @@ function EntryEditor(props) {
 					url: value,
 					width: img.width,
 					height: img.height,
-					type: 'image'
+					type: 'image' as 'image'
 				};
 				setEntries([...entries, entry]);
-				inputs.src.current.value = '';
-				inputs.src.current.focus();
+				if (inputs.src.current) {
+					inputs.src.current.value = '';
+					inputs.src.current.focus();
+				}
 			};
 		} else {
 			const vid = document.createElement('video');
@@ -50,29 +53,31 @@ function EntryEditor(props) {
 					url: value,
 					width: vid.videoWidth,
 					height: vid.videoHeight,
-					type: 'video'
+					type: 'video' as 'video'
 				};
 				setEntries([...entries, entry]);
-				inputs.src.current.value = '';
-				inputs.src.current.focus();
+				if (inputs.src.current) {
+					inputs.src.current.value = '';
+					inputs.src.current.focus();
+				}
 			};
 		}
 	};
 
-	const removeEntry = i => {
+	const removeEntry = (i: number) => {
 		const updated = [...entries.slice(0, i), ...entries.slice(i + 1)];
 		setEntries(updated);
 	};
 
-	const updateTags = tags => {
+	const updateTags = (tags: string[]) => {
 		setTags(tags);
 	};
 
 	const sendEntry = () => {
-		API.post('/images/add', {images: entries, tags, category: inputs.category.current.value})
+		API.post('/images/add', { images: entries, tags, category: inputs.category.current?.value })
 			.then(response => {
 				if (response.status === 200) {
-					props.addImportedImages(response.data, inputs.category.current.value);
+					props.addImportedImages(response.data, inputs.category.current!?.value);
 				} else {
 					// Must get rid of all alert for better warning notifications.
 					// lmao 
@@ -83,8 +88,8 @@ function EntryEditor(props) {
 	};
 
 	const editEntry = () => {
-		const category = inputs.category.current.value;
-		props.edit(tags, category !== props.editing.category ? category : undefined);
+		const category = inputs.category.current!?.value;
+		props.edit(tags, category !== props.editing!.category ? category : undefined);
 	};
 
 	return (
@@ -104,21 +109,21 @@ function EntryEditor(props) {
 								entries.map((e, i) =>
 									<div className='flex' key={`image-${i}`}>
 										<span className='inline-block w-3/4 truncate'>{e.url}</span>
-										<span className='mx-2 cursor-pointer' onClick={removeEntry.bind(this, i)}><MdClose size='1.5em'></MdClose></span>
+										<span className='mx-2 cursor-pointer' onClick={() => removeEntry(i)}><MdClose size='1.5em'></MdClose></span>
 									</div>
 								)}
 						</div>
 						<div className='flex'>
 							<input type='text' placeholder='Image/Video URL' className='font-default text-black text-xl border-none h-8 px-2 w-1/2 rounded-l-sm rounded-r-none' ref={inputs.src} />
-							<button className='bg-white text-black h-8 border-l px-2 border-black' onClick={addEntry.bind(this, 'image')}>Add</button>
-							<button className='bg-white text-black h-8 border-l px-2 border-black rounded-r-sm' onClick={addEntry.bind(this, 'video')}>Add Video</button>
+							<button className='bg-white text-black h-8 border-l px-2 border-black' onClick={() => addEntry('image')}>Add</button>
+							<button className='bg-white text-black h-8 border-l px-2 border-black rounded-r-sm' onClick={() => addEntry('video')}>Add Video</button>
 						</div>
 					</div>
 				}
 				<div>
 					<div className='pop-up-title mt-4'>{props.editing ? 'Edit entry' : 'Set metadata'}</div>
 					<div className='pop-up-title text-left text-xl'>Tags</div>
-					<TagsEditor tags={tags} updateTags={updateTags.bind(this)} placeholder='Tag' />
+					<TagsEditor tags={tags} updateTags={updateTags} setIsTyping={props.setIsTyping} placeholder='Tag' />
 					<div className='pop-up-title text-left text-xl'>Category</div>
 					<select ref={inputs.category} className='text-black'>
 						<option className='font-bold' disabled>Select a category</option>
@@ -143,3 +148,14 @@ function EntryEditor(props) {
 	);
 }
 export default EntryEditor;
+
+interface EntryEditorProps {
+	editing?: Media;
+	addImportedImages: (media: Media[], category: string) => void;
+	edit: (tags: string[], category?: string) => void;
+	close: () => void;
+	categories: string[];
+	selected: string;
+	setIsTyping: (v: boolean) => void;
+	delete: () => void;
+}
