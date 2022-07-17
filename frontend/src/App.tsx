@@ -188,7 +188,7 @@ const App = () => {
 	};
 
 	// Edits a media
-	const editMedia = async (tags: string[], category: string) => {
+	const editMedia = async (tags: string[], category?: string) => {
 		const obj = { ...media };
 		obj[selectedCategory] = obj[selectedCategory].map(i => i.id === isEditing ? { ...i, tags } : i);
 		if (category) {
@@ -256,6 +256,7 @@ const App = () => {
 		<div className='App bg-gray-800 w-full h-full flex flex-col'>
 			{viewing !== null &&
 				<MediaViewer
+					alt=''
 					{...filtered[viewing]}
 					close={() => setViewing(null)}
 					next={nextImage}
@@ -264,22 +265,25 @@ const App = () => {
 			}
 			{isAdding ?
 				<EntryEditor
+					edit={editMedia}
+					delete={deleteImage}
+					setIsTyping={setIsTyping}
 					categories={categories}
 					close={() => setIsAdding(false)}
 					addImportedImages={addImportedMedia}
-					selected={selectedCategory}>
-				</EntryEditor>
+					selected={selectedCategory} />
 				: ''
 			}
 			{isEditing ?
 				<EntryEditor
+					addImportedImages={addImportedMedia}
+					edit={editMedia}
+					delete={deleteImage}
 					categories={categories}
 					close={() => setIsEditing(null)}
 					editing={media[selectedCategory]?.find(img => img.id === isEditing)}
-					edit={editMedia}
-					delete={deleteImage}
-					selected={selectedCategory}>
-				</EntryEditor>
+					setIsTyping={setIsTyping}
+					selected={selectedCategory} />
 				: ''
 			}
 			<div className='relative w-full h-full overflow-auto'>
@@ -300,10 +304,10 @@ const App = () => {
 					(
 						<Gallery
 							className=''
-							entries={media}
-							entriesCount={mediaCount}
+							media={media}
+							mediaCount={mediaCount}
 							filtered={filtered}
-							galleryRef={galleryRef}
+							ref={galleryRef}
 							imagesCount={imagesCount}
 							selectedCategory={selectedCategory}
 							setIsEditing={setIsEditing}
