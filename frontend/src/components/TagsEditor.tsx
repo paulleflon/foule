@@ -1,5 +1,5 @@
-import {useEffect, useRef} from 'react';
-import {MdClose} from 'react-icons/md';
+import { KeyboardEventHandler, useEffect, useRef, WheelEventHandler } from 'react';
+import { MdClose } from 'react-icons/md';
 
 function TagsEditor({
 	className,
@@ -8,17 +8,19 @@ function TagsEditor({
 	setIsTyping,
 	tags,
 	updateTags
-}) {
-	const inputRef = useRef(null);
-	const tagListRef = useRef(null);
-	const onDown = (e) => {
+}: TagsEditorProps) {
+	const inputRef = useRef<HTMLInputElement>(null);
+	const tagListRef = useRef<HTMLDivElement>(null);
+	const onDown = (e: KeyboardEvent) => {
+		if (!inputRef.current)
+			return;
 		if (!inputRef.current.value.trim() && e.code === 'Backspace') {
 			updateTags(tags.slice(0, tags.length - 1));
 		}
 		// Timeout to have the input value with this keydown taken into account.
 		// We don't want this for Backspace though
 		setTimeout(() => {
-			const input = inputRef.current;
+			const input = inputRef.current!;
 			let value = input.value.trim();
 			if (e.code === 'Comma')
 				value = value.substring(0, value.length - 1);
@@ -31,20 +33,22 @@ function TagsEditor({
 		});
 	};
 
-	const onWheel = e => {
+	const onWheel = (e: WheelEvent) => {
 		const delta = e.deltaY;
+		if (tagListRef.current)
 		tagListRef.current.scrollLeft += delta;
 	};
-
+	
 	useEffect(() => {
-		tagListRef.current.scrollLeft = tagListRef.current.scrollWidth;
+		if (tagListRef.current)
+			tagListRef.current.scrollLeft = tagListRef.current.scrollWidth;
 	}, [tagListRef, tags]);
 
 	return (
 		<div className={`${className} flex flex-row`}>
 			<div
 				className={`hide-scrollbar tags flex flex-row max-w-[300px] overflow-auto ${tags.length && 'mr-2'}`}
-				onWheel={onWheel}
+				onWheel={onWheel as any as WheelEventHandler<HTMLDivElement>}
 				ref={tagListRef}
 			>
 				{
@@ -65,10 +69,20 @@ function TagsEditor({
 				className={inputClassName || 'font-default text-xl border-none h-8 px-2 block rounded-sm w-20 md:w-48 text-black'}
 				onBlur={() => setIsTyping(false)}
 				onFocus={() => setIsTyping(true)}
-				onKeyDown={onDown}
+				onKeyDown={onDown as any as KeyboardEventHandler<HTMLInputElement>}
 				placeholder={placeholder}
-				ref={inputRef} />
+				ref={inputRef}
+			/>
 		</div>
 	);
 }
 export default TagsEditor;
+
+export interface TagsEditorProps {
+	className?: string;
+	inputClassName?: string;
+	placeholder?: string;
+	setIsTyping: (v: boolean) => void;
+	tags: string[];
+	updateTags: (v: string[]) => void;
+}
