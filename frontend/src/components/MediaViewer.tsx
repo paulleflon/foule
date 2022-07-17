@@ -1,16 +1,15 @@
 import {MdChevronLeft, MdChevronRight, MdClose} from 'react-icons/md';
 import VideoPlayer from './VideoPlayer';
 
-function MediaViewer(props) {
-
-	let xDown = null;
-	let yDown = null;
-	function handleTouchStart(e) {
+function MediaViewer(props: MediaViewerProps) {
+	let xDown: number | null = null;
+	let yDown: number | null = null;
+	function handleTouchStart(e: TouchEvent) {
 		const firstTouch = e.touches[0];
 		xDown = firstTouch.clientX;
 		yDown = firstTouch.clientY;
 	};
-	function handleTouchMove(e) {
+	function handleTouchMove(e: TouchEvent) {
 		if (!xDown || !yDown)
 			return;
 		if (document.documentElement.clientWidth / window.innerWidth > 1) {
@@ -54,8 +53,8 @@ function MediaViewer(props) {
 						className='w-full h-full p-10 object-contain'
 						src={props.url}
 						alt={props.alt}
-						onTouchStart={handleTouchStart}
-						onTouchMove={handleTouchMove}
+						onTouchStart={handleTouchStart as any}
+						onTouchMove={handleTouchMove as any}
 					/>
 					:
 					<VideoPlayer
@@ -75,3 +74,13 @@ function MediaViewer(props) {
 	);
 }
 export default MediaViewer;
+
+
+export interface MediaViewerProps {
+	next: () => void;
+	previous: () => void;
+	url: string;
+	alt: string;
+	type: 'video' | 'image';
+	close: () => void;
+}
