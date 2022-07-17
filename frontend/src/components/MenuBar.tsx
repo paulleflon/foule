@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import CategorySelect from './CategorySelect';
 import TagsEditor from './TagsEditor';
-import {TiArrowShuffle} from 'react-icons/ti';
-import {MdClose} from 'react-icons/md';
+import { TiArrowShuffle } from 'react-icons/ti';
+import { MdClose } from 'react-icons/md';
 import JoinFull from '../assets/join_full.png';
 import JoinInner from '../assets/join_inner.png';
 
-function MenuBar({
+const MenuBar = ({
 	categories,
 	deleteCategory,
 	filter,
@@ -18,7 +18,7 @@ function MenuBar({
 	setIsTyping,
 	shuffleImages,
 	updateFilter,
-}) {
+}: MenuBarProps) => {
 	const [explainOpen, setExplainOpen] = useState(false);
 	return (
 		<>
@@ -97,3 +97,17 @@ function MenuBar({
 }
 
 export default MenuBar;
+
+export interface MenuBarProps {
+	categories: string[];
+	deleteCategory: (name: string) => void;
+	filter: Record<string, string[]>;
+	filterUnion: boolean;
+	renameCategory: (oldName: string, newName: string) => void;
+	selectCategory: (name: string) => void;
+	selectedCategory: string;
+	setFilterUnion: (v: boolean) => void;
+	setIsTyping: (v: boolean) => void;
+	shuffleImages: () => void;
+	updateFilter: (filter: string[]) => void;
+}
