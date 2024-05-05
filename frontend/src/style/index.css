@@ -48,6 +48,14 @@ input {
 	opacity: 1;
 }
 
+.image-card-actions-background {
+	background: linear-gradient(to bottom, #0006, transparent);
+}
+
+.image-card-tags-background {
+	background: linear-gradient(to bottom, transparent 50%, #0006);
+	}
+
 .loader {
 	border: 3px solid #fff;
 	border-top-color: transparent;
