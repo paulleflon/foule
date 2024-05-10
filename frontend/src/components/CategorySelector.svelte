@@ -111,7 +111,7 @@
 						{#if editing === c}
 							<input bind:this={renameInput} bind:value={renameValue} />
 						{:else}
-							<span on:click={() => changeCategory(selected)}>
+							<span on:click={() => changeCategory(c)}>
 								{@html highlightSearch(c, searchQuery)}</span>
 						{/if}
 						<div class="actions">
