@@ -3,6 +3,6 @@ module.exports = function(req, res, next) {
 	if (process.env.API_KEY === undefined)
 		return next();
 	if (auth === undefined || auth !== process.env.API_KEY)
-		return res.status(401).send('Unauthorized');
+		return res.status(401).json({message: 'Unauthorized'}).send();
 	next();
 };
