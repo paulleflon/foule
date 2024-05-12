@@ -1,11 +1,19 @@
 <script>
 	/* eslint-disable svelte/no-at-html-tags */
-	import {post} from '$lib/api.js';
+	import { post } from '$lib/api.js';
 	import { tick } from 'svelte';
-	import {Icon} from 'svelte-icons-pack';
-	import {FaSolidBarsStaggered, FaSolidCaretDown, FaSolidCaretUp, FaSolidCheck, FaSolidPencil, FaSolidTrash, FaSolidPlus } from 'svelte-icons-pack/fa';
+	import { Icon } from 'svelte-icons-pack';
+	import {
+		FaSolidBarsStaggered,
+		FaSolidCaretDown,
+		FaSolidCaretUp,
+		FaSolidCheck,
+		FaSolidPencil,
+		FaSolidTrash,
+		FaSolidPlus
+	} from 'svelte-icons-pack/fa';
 
-	export let selected;
+	export let selectedCategory;
 	export let categories;
 
 	let editing = null;
@@ -20,90 +28,87 @@
 			to = setTimeout(() => {
 				editing = null;
 				searchQuery = '';
-			}, 200)
+			}, 200);
 		} else {
 			clearTimeout(to);
 		}
 	}
 
-	const externalClick = e => {
-		if (!e.target.classList.contains('category-selector'))
-			opened = false;
-	}
+	const externalClick = (e) => {
+		if (!e.target.classList.contains('category-selector')) opened = false;
+	};
 
-	const setEditing = async c => {
+	const setEditing = async (c) => {
 		editing = c;
 		await tick();
 		renameInput.value = c;
 		renameInput.select();
-	}
+	};
 
 	const highlightSearch = (str, search) => {
-		return str.replace(new RegExp(`(${search.trim()})`,'gi'),'<b>$1</b>');
-	}
+		return str.replace(new RegExp(`(${search.trim()})`, 'gi'), '<b>$1</b>');
+	};
 
-	const changeCategory = c => {
-		selected = c;
+	const changeCategory = (c) => {
+		selectedCategory = c;
 		opened = false;
-	}
+	};
 
 	const createCategory = async () => {
-			let name = searchQuery.trim();
-			if (!name)
-				return;
-			let res = await post('/api/categories/create', {name});
-			res = await res.json();
-			if (res.ok) {
-				categories.push(searchQuery);
-				categories = categories;
-				searchQuery = '';
-			}
-	}
+		let name = searchQuery.trim();
+		if (!name) return;
+		let res = await post('/api/categories/create', { name });
+		res = await res.json();
+		if (res.ok) {
+			categories.push(searchQuery);
+			categories = categories;
+			searchQuery = '';
+		}
+	};
 
-	const deleteCategory = async name => {
+	const deleteCategory = async (name) => {
 		const confirmation = confirm(`Are you sure you want to delete ${name}?`);
-		if (!confirmation)
-			return;
-		let res = await post('/api/categories/delete', {name});
-		const {ok} = await res.json();
-		if (ok)
-			categories = categories.filter(c => c !== name);
-		if (ok && name === selected)
-			selected = categories[0];
-	}
+		if (!confirmation) return;
+		let res = await post('/api/categories/delete', { name });
+		const { ok } = await res.json();
+		if (ok) categories = categories.filter((c) => c !== name);
+		if (ok && name === selectedCategory) selectedCategory = categories[0];
+	};
 
-	const renameCategory = async name => {
+	const renameCategory = async (name) => {
 		const newName = renameValue.trim();
 		if (!newName || newName === name) {
 			editing = null;
 			return;
 		}
-		const res = await post('/api/categories/rename', {name, newName});
-		const {ok} = await res.json();
+		const res = await post('/api/categories/rename', { name, newName });
+		const { ok } = await res.json();
 		if (ok) {
-			categories = categories.map(c => c === name ? newName : c);
-			if (name === selected)
-				selected = newName;
+			categories = categories.map((c) => (c === name ? newName : c));
+			if (name === selectedCategory) selectedCategory = newName;
 		}
 		editing = null;
-	}
-
+	};
 </script>
 
 <svelte:window on:click={externalClick} />
-
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class={`category-selector ${opened ? 'opened' : ''}`} on:click|stopPropagation={() => null}>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class='selection' on:click={() => opened = !opened}>
-		<Icon src={FaSolidBarsStaggered}/>
-		<span>{selected}</span>
+	<div class="selection" on:click={() => (opened = !opened)}>
+		<Icon src={FaSolidBarsStaggered} />
+		<span>{selectedCategory}</span>
 		<Icon src={opened ? FaSolidCaretUp : FaSolidCaretDown} />
 	</div>
-	<div class='category-dropdown'>
-		<input bind:value={searchQuery} type="text" class='category-search' placeholder="Search or create...">
+	<div class="category-dropdown">
+		<input
+			bind:value={searchQuery}
+			type="text"
+			class="category-search"
+			placeholder="Search or create..."
+		/>
 		<div class="category-list">
 			{#each categories as c}
 				{#if c.toLowerCase().includes(searchQuery.toLocaleLowerCase().trim())}
@@ -112,13 +117,14 @@
 							<input bind:this={renameInput} bind:value={renameValue} />
 						{:else}
 							<span on:click={() => changeCategory(c)}>
-								{@html highlightSearch(c, searchQuery)}</span>
+								{@html highlightSearch(c, searchQuery)}</span
+							>
 						{/if}
 						<div class="actions">
 							<!-- svelte-ignore a11y-no-static-element-interactions -->
 							{#if editing === c}
 								<div class="confirm-edit" on:click={() => renameCategory(c)}>
-									<Icon src={FaSolidCheck} color='#1bcf22'/>
+									<Icon src={FaSolidCheck} color="#1bcf22" />
 								</div>
 							{:else}
 								<div class="edit" on:click={() => setEditing(c)}>
@@ -126,19 +132,21 @@
 								</div>
 							{/if}
 							<div class="delete" on:click={() => deleteCategory(c)}>
-								<Icon src={FaSolidTrash} color='#ff330f' />
+								<Icon src={FaSolidTrash} color="#ff330f" />
 							</div>
 						</div>
 					</div>
 				{/if}
 			{/each}
-			{#if categories.filter(c => c.toLowerCase().includes(searchQuery.toLowerCase())).length === 0}
-				<div class='no-match' on:click={createCategory}>
+			{#if categories.filter((c) => c
+					.toLowerCase()
+					.includes(searchQuery.toLowerCase())).length === 0}
+				<div class="no-match" on:click={createCategory}>
 					<div class="plus">
-						<Icon src={FaSolidPlus} size={32} color='#aaa' />
+						<Icon src={FaSolidPlus} size={32} color="#aaa" />
 					</div>
 					<div class="sentence">
-						Create category 
+						Create category
 						<div>{searchQuery}</div>
 					</div>
 				</div>
@@ -160,9 +168,10 @@
 		backdrop-filter: blur(20px);
 		color: white;
 		overflow: hidden;
-		transition: .2s ease;
-		box-shadow: 0px 15px 10px #0003;
+		transition: 0.2s ease;
+		box-shadow: 0 15px 10px #0003;
 	}
+
 	.category-selector.opened {
 		background: white;
 		color: black;
@@ -185,7 +194,7 @@
 
 	.category-dropdown {
 		max-height: 0;
-		transition: max-height .3s ease;
+		transition: max-height 0.3s ease;
 		display: flex;
 		flex-direction: column;
 	}
@@ -238,7 +247,9 @@
 	.category-dropdown .category .actions {
 		display: flex;
 		gap: 5px;
-		& div {cursor: pointer;}
+		& div {
+			cursor: pointer;
+		}
 	}
 
 	.category-dropdown .category + .category:after {
@@ -286,5 +297,4 @@
 		width: 100%;
 		font: 600 12pt 'Poppins';
 	}
-
 </style>

@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/db.js';
+import { db } from '$lib/db';
 
 export function GET({ params }) {
 	const { category } = params;

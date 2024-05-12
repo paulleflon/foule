@@ -1,4 +1,4 @@
-import { db } from '$lib/db.js';
+import { db } from '$lib/db';
 import { redirect } from '@sveltejs/kit';
 import sharp from 'sharp';
 
@@ -9,7 +9,6 @@ export async function GET({ params }) {
 	if (image.type === 'video') return redirect(302, image.url);
 
 	let response = await fetch(image.url);
-	console.log(response.status);
 	if (response.status !== 200) return redirect(302, image.url);
 	try {
 		const data = await sharp(await response.arrayBuffer())
@@ -17,7 +16,6 @@ export async function GET({ params }) {
 			.toBuffer();
 		return new Response(data, { headers: { 'Content-Type': 'image/jpeg' } });
 	} catch (_) {
-		console.log(_);
 		redirect(302, image.url);
 	}
 }
