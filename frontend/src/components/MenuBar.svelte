@@ -1,5 +1,4 @@
 <script>
-	import { blur } from 'svelte/transition';
 	import CategorySelector from './CategorySelector.svelte';
 	import { Icon } from 'svelte-icons-pack';
 	import { FaSolidMagnifyingGlass, FaSolidXmark } from 'svelte-icons-pack/fa';
@@ -71,9 +70,7 @@
 		>
 			<div class="filter-list" bind:this={filterList}>
 				{#each galleryFilters as filter}
-					<div transition:blur={{ amount: 10, duration: 200 }}>
-						<ImageTag name={filter} on:close={() => removeFilter(filter)} />
-					</div>
+					<ImageTag name={filter} on:close={() => removeFilter(filter)} />
 				{/each}
 			</div>
 			{#if galleryFilters.length}

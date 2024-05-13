@@ -38,7 +38,9 @@
 	</h1>
 	<section>
 		{#each images as image}
-			<ImageCard id={image.id} url={image.url} tags={image.tags} />
+			{#if !galleryFilters.length || galleryFilters.some((f) => image.tags.includes(f))}
+				<ImageCard id={image.id} url={image.url} tags={image.tags} />
+			{/if}
 		{/each}
 	</section>
 {/key}
