@@ -1,4 +1,5 @@
 <script>
+	import { blur } from 'svelte/transition';
 	import CategorySelector from './CategorySelector.svelte';
 	import { Icon } from 'svelte-icons-pack';
 	import { FaSolidMagnifyingGlass, FaSolidXmark } from 'svelte-icons-pack/fa';
@@ -12,6 +13,7 @@
 	let filterList;
 	let filterContainer;
 	let filterScrollX = 0;
+	let searchBar;
 	let searchValue;
 
 	const filterScroll = (e) => {
@@ -36,7 +38,7 @@
 			await tick();
 			filterScrollX = filterList.scrollWidth - filterContainer.offsetWidth + 15;
 		}
-		if (e.key === 'Backspace' && searchValue === '') {
+		if (e.key === 'Backspace' && !searchValue) {
 			galleryFilters.pop();
 			galleryFilters = galleryFilters;
 			await tick();
@@ -69,7 +71,9 @@
 		>
 			<div class="filter-list" bind:this={filterList}>
 				{#each galleryFilters as filter}
-					<ImageTag name={filter} on:close={() => removeFilter(filter)} />
+					<div transition:blur={{ amount: 10, duration: 200 }}>
+						<ImageTag name={filter} on:close={() => removeFilter(filter)} />
+					</div>
 				{/each}
 			</div>
 			{#if galleryFilters.length}
@@ -80,8 +84,16 @@
 			{/if}
 		</div>
 		<div class="input">
-			<input placeholder="Filter by tags..." on:keydown={searchKeydown} bind:value={searchValue} />
-			<button class="icon">
+			<input
+				placeholder="Filter by tags..."
+				on:keydown={searchKeydown}
+				bind:value={searchValue}
+				bind:this={searchBar}
+			/>
+			<button
+				class="icon"
+				on:click={searchBar.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))}
+			>
 				<Icon src={FaSolidMagnifyingGlass} color="#ffffff" size={16} />
 			</button>
 		</div>
@@ -147,6 +159,7 @@
 					rgba(0, 0, 0, 0.4) 97%,
 					rgba(0, 0, 0, 0) 100%
 				);
+				overflow: hidden;
 				& .filter-list {
 					height: 100%;
 					width: 100%;

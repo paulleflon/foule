@@ -3,18 +3,31 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import ImageCard from '../../components/ImageCard.svelte';
+	import { page } from '$app/stores';
 
 	export let data;
 
 	let categories = data.categories,
 		selectedCategory = data.selectedCategory,
-		galleryFilters = [],
+		galleryFilters = data.galleryFilters,
 		images;
 
 	$: images = data.images;
 
 	$: {
 		if (browser) goto(`/${selectedCategory}`);
+	}
+
+	$: {
+		if (browser) {
+			if (galleryFilters.length) {
+				let query = new URLSearchParams($page.url.searchParams);
+				query.set('s', galleryFilters.join(','));
+				goto(`?${query}`, { keepFocus: true });
+			} else {
+				goto($page.url.pathname, { keepFocus: true });
+			}
+		}
 	}
 </script>
 

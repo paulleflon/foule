@@ -1,7 +1,7 @@
 import { db } from '$lib/db.js';
 import { error, redirect } from '@sveltejs/kit';
 
-export function load({ params, cookies }) {
+export function load({ params, cookies, url }) {
 	const { category: paramCategory } = params;
 	const savedCategory = cookies.get('selected_category');
 	const categories = db
@@ -27,9 +27,13 @@ export function load({ params, cookies }) {
 		.map((e) => ({ ...e, tags: e.tags === '' ? [] : e.tags.split(',') }));
 
 	cookies.set('last_category', paramCategory, { path: '/' });
+
+	const queryFilters = url.searchParams.get('s');
+	const galleryFilters = queryFilters ? queryFilters.split(',') : [];
 	return {
 		selectedCategory: paramCategory,
 		categories,
-		images
+		images,
+		galleryFilters
 	};
 }
