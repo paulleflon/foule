@@ -57,7 +57,7 @@
 					<div class="option">
 						<h2>Another category</h2>
 						<div class="absolute">
-							<CategorySelector bind:selectedCategory bind:categories />
+							<CategorySelector editable={false} bind:selectedCategory bind:categories />
 						</div>
 					</div>
 					{#if galleryFilters.length}

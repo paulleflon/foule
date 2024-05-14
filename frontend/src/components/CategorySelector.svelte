@@ -15,6 +15,7 @@
 
 	export let selectedCategory;
 	export let categories;
+	export let editable = true;
 
 	let editing = null;
 	let opened = false;
@@ -107,7 +108,7 @@
 			bind:value={searchQuery}
 			type="text"
 			class="category-search"
-			placeholder="Search or create..."
+			placeholder={editable ? 'Search or create...' : 'Search...'}
 		/>
 		<div class="category-list">
 			{#each categories as c}
@@ -120,35 +121,39 @@
 								{@html highlightSearch(c, searchQuery)}</span
 							>
 						{/if}
-						<div class="actions">
-							<!-- svelte-ignore a11y-no-static-element-interactions -->
-							{#if editing === c}
-								<div class="confirm-edit" on:click={() => renameCategory(c)}>
-									<Icon src={FaSolidCheck} color="#1bcf22" />
+						{#if editable}
+							<div class="actions">
+								<!-- svelte-ignore a11y-no-static-element-interactions -->
+								{#if editing === c}
+									<div class="confirm-edit" on:click={() => renameCategory(c)}>
+										<Icon src={FaSolidCheck} color="#1bcf22" />
+									</div>
+								{:else}
+									<div class="edit" on:click={() => setEditing(c)}>
+										<Icon src={FaSolidPencil} />
+									</div>
+								{/if}
+								<div class="delete" on:click={() => deleteCategory(c)}>
+									<Icon src={FaSolidTrash} color="#ff330f" />
 								</div>
-							{:else}
-								<div class="edit" on:click={() => setEditing(c)}>
-									<Icon src={FaSolidPencil} />
-								</div>
-							{/if}
-							<div class="delete" on:click={() => deleteCategory(c)}>
-								<Icon src={FaSolidTrash} color="#ff330f" />
 							</div>
-						</div>
+						{/if}
 					</div>
 				{/if}
 			{/each}
 			{#if categories.filter((c) => c
 					.toLowerCase()
 					.includes(searchQuery.toLowerCase())).length === 0}
-				<div class="no-match" on:click={createCategory}>
-					<div class="plus">
-						<Icon src={FaSolidPlus} size={32} color="#aaa" />
-					</div>
-					<div class="sentence">
-						Create category
-						<div>{searchQuery}</div>
-					</div>
+				<div class="no-match" on:click={() => (editable ? createCategory : null)}>
+					{#if editable}
+						<div class="plus">
+							<Icon src={FaSolidPlus} size={32} color="#aaa" />
+						</div>
+						<div class="sentence">
+							Create category
+							<div>{searchQuery}</div>
+						</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
