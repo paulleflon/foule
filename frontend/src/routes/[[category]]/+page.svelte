@@ -13,19 +13,15 @@
 		images;
 
 	$: images = data.images;
-
 	$: {
-		if (browser) goto(`/${selectedCategory}`);
-	}
-
-	$: {
+		console.log({ selectedCategory });
 		if (browser) {
 			if (galleryFilters.length) {
 				let query = new URLSearchParams($page.url.searchParams);
 				query.set('s', galleryFilters.join(','));
-				goto(`?${query}`, { keepFocus: true });
+				goto(`/${selectedCategory}?${query}`, { keepFocus: true });
 			} else {
-				goto($page.url.pathname, { keepFocus: true });
+				goto(`/${selectedCategory}`, { keepFocus: true });
 			}
 		}
 	}
@@ -39,7 +35,7 @@
 	<section>
 		{#each images as image}
 			{#if !galleryFilters.length || galleryFilters.some((f) => image.tags.includes(f))}
-				<ImageCard id={image.id} url={image.url} tags={image.tags} />
+				<ImageCard id={image.id} tags={image.tags} />
 			{/if}
 		{/each}
 	</section>
