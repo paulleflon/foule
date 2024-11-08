@@ -1,5 +1,14 @@
+.DS_Store
 node_modules
-*.sqlite
+/build
+/.svelte-kit
+/package
 .env
-build
-temp
+.env.*
+!.env.example
+.vercel
+.output
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+/.idea
+/data
